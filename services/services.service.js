@@ -6,7 +6,10 @@ const CacheCleanerMixin = require("../mixins/cache.cleaner.mixin");
 
 module.exports = {
 	name: "services",
-	mixins: [DbService("services"), CacheCleanerMixin(["cache.clean.services"])],
+	mixins: [
+		DbService("services"),
+		CacheCleanerMixin(["cache.clean.services"]),
+	],
 	/**
 	 * Default settings
 	 */
@@ -100,9 +103,16 @@ module.exports = {
 					$set: newData,
 				};
 
-				const doc = await this.adapter.updateById(ctx.params.id, update);
+				const doc = await this.adapter.updateById(
+					ctx.params.id,
+					update
+				);
 				const entity = await this.transformDocuments(ctx, {}, doc);
-				const json = await this.transformResult(ctx, entity, ctx.meta.user);
+				const json = await this.transformResult(
+					ctx,
+					entity,
+					ctx.meta.user
+				);
 				await this.entityChanged("updated", json, ctx);
 				return json;
 			},
@@ -129,14 +139,18 @@ module.exports = {
 			},
 			async handler(ctx) {
 				const limit = ctx.params.limit ? Number(ctx.params.limit) : 20;
-				const offset = ctx.params.offset ? Number(ctx.params.offset) : 0;
+				const offset = ctx.params.offset
+					? Number(ctx.params.offset)
+					: 0;
 				const name = ctx.params.name || null;
 				const categoryId = ctx.params.categoryId || null;
+
+				const sort = ctx.params.sort || ["-name"];
 
 				let params = {
 					limit,
 					offset,
-					sort: ["-name"],
+					sort: sort,
 					query: {},
 				};
 
@@ -148,7 +162,8 @@ module.exports = {
 				countParams = Object.assign({}, params);
 				// Remove pagination params
 				if (countParams && countParams.limit) countParams.limit = null;
-				if (countParams && countParams.offset) countParams.offset = null;
+				if (countParams && countParams.offset)
+					countParams.offset = null;
 
 				console.log("select params: ", params);
 				const res = await this.Promise.all([
@@ -164,9 +179,9 @@ module.exports = {
 				const page = offset ? offset : 1;
 
 				const r = await this.transformResult(ctx, docs, ctx.meta.user);
-				r.totalRows = res[1];
-				r.limit = limit;
-				r.offset = page;
+				r.total = res[1];
+				r.pageSize = limit;
+				r.page = page;
 				r.totalPages = Math.ceil(res[1] / limit);
 
 				return r;
@@ -213,7 +228,9 @@ module.exports = {
 		async transformResult(ctx, entities, user) {
 			if (Array.isArray(entities)) {
 				const rows = await this.Promise.all(
-					entities.map((item) => this.transformEntity(ctx, item, user))
+					entities.map((item) =>
+						this.transformEntity(ctx, item, user)
+					)
 				);
 				return { rows };
 			} else {
