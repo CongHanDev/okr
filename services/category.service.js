@@ -2,14 +2,14 @@
 
 const DbService = require("../mixins/db.mixin");
 const routers = require("../routes/status.route");
-const statusTransformer = require("../transformers/status.transformer");
+const categoryTransformer = require("../transformers/category.transformer");
 const CacheCleanerMixin = require("../mixins/cache.cleaner.mixin");
 
 module.exports = {
-	name: "status",
+	name: "category",
 	mixins: [
-		DbService("status"),
-		CacheCleanerMixin(["cache.clean.status"]),
+		DbService("categories"),
+		CacheCleanerMixin(["cache.clean.category"]),
 	],
 	/**
    * Default settings
@@ -19,7 +19,6 @@ module.exports = {
 			"_id",
 			"slug",
 			"name",
-			"type",
 			"description",
 			"created_at",
 			"updated_at",
@@ -28,7 +27,6 @@ module.exports = {
 		entityValidator: {
 			slug: { type: "string" },
 			name: { type: "string" },
-			type: { type: "string" },
 			description: { type: "string", optional: true },
 		},
 	},
@@ -45,7 +43,7 @@ module.exports = {
 		get: {
 			...routers.get,
 			async handler (ctx) {
-				return this.getEntityById(ctx, statusTransformer);
+				return this.getEntityById(ctx, categoryTransformer);
 			},
 		},
 
@@ -56,7 +54,7 @@ module.exports = {
 		list: {
 			...routers.list,
 			async handler (ctx) {
-				return this.loadList(ctx, statusTransformer);
+				return this.loadList(ctx, categoryTransformer);
 			},
 		},
 		/**
