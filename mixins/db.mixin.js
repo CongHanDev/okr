@@ -1,6 +1,7 @@
 "use strict";
 
 const fs = require("fs");
+const _ = require("lodash");
 const DbService	= require("moleculer-db");
 const responder = require("../mixins/response.mixin");
 
@@ -44,10 +45,11 @@ module.exports = function(collection) {
 				const limit = ctx.params.limit ? Number(ctx.params.limit) : process.env.LIMIT;
 				const offset = ctx.params.offset ? Number(ctx.params.offset) : 0;
 				const name = ctx.params.name || null;
-
+				const populates = _.keys(this.settings.populates);
 				let params = {
 					limit,
 					offset,
+					populate: populates,
 				};
 
 				if (name) params.search = name;
@@ -66,10 +68,11 @@ module.exports = function(collection) {
 					// Get count of all rows
 					this.adapter.count(countParams),
 				]);
+				const docs = await this.transformDocuments(ctx, params, res[0]);
 				const page = offset ? offset : 1;
 				params.total = res[1];
 				params.currentpage = page;
-				return responder.httpOK(res[0], transformer, params);
+				return responder.httpOK(docs, transformer, params);
 			},
 
 			async getEntityById(ctx, transformer){

@@ -10,15 +10,15 @@ const routes = {
 	},
 
 	get: {
-    rest: `${ REQUEST.GET } /:id`,
+		rest: `${ REQUEST.GET } /:id`,
 	},
 
 	update: {
-    rest: `${ REQUEST.PUT } /:id`,
+		rest: `${ REQUEST.PUT } /:id`,
 	},
 
 	remove: {
-    rest: `${ REQUEST.DELETE } /:id`,
+		rest: `${ REQUEST.DELETE } /:id`,
 	},
 };
 

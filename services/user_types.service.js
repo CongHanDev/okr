@@ -36,6 +36,9 @@ module.exports = {
 
 		get: {
 			...routers.get,
+			async handler (ctx) {
+				return this.loadList(ctx, userTypeTransformer);
+			},
 		},
 
 		/**

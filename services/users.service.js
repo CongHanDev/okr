@@ -33,7 +33,7 @@ module.exports = {
 			"avatar",
 			"banner",
 			"email",
-			"firs_tname",
+			"first_name",
 			"last_name",
 			"phone",
 			"city",
@@ -57,8 +57,6 @@ module.exports = {
 
 		/** Validator schema for entity */
 		entityValidator: {
-			avatar: { type: "string", optional: true },
-			banner: { type: "string", optional: true },
 			email: { type: "email" },
 			first_name: { type: "string" },
 			last_name: { type: "string" },
@@ -67,7 +65,6 @@ module.exports = {
 			identity_card: { type: "string", optional: true },
 			birthday: { type: "date", optional: true },
 			address: { type: "string", optional: true },
-			user_type: { type: "string" },
 			introduce: { type: "string", optional: true },
 			website: { type: "string", optional: true },
 			expertises: { type: "array", items: "string", optional: true },
@@ -78,16 +75,19 @@ module.exports = {
 			services: { type: "array", items: "string", optional: true },
 		},
 		populates: {
+		  /*
 			avatar: {
-				action: "files.get",
+				action: "files.find",
 			},
 			banner: {
-				action: "files.get",
+				action: "files.find",
 			},
 			user_type: {
 				action: "user-type.get",
 			},
-		},
+			*/
+		}
+
 	},
 
 	/**
