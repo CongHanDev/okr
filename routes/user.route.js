@@ -28,8 +28,11 @@ const routes = {
 	},
 
 	verify: {
-		rest: `${ REQUEST.PUT } /:id/verify`,
+		rest: `${ REQUEST.PUT } /verify`,
 		params: {
+			id: {
+				type: "string",
+			},
 			otp: {
 				type: "string",
 				pattern: /^[a-zA-Z0-9]+$/,

@@ -1,6 +1,8 @@
 "use strict";
 
 const DbService = require("../mixins/db.mixin");
+const routers = require("../routes/file.route");
+const fileTransformer = require("../transformers/file.transformer");
 
 module.exports = {
 	name: "files",
@@ -11,18 +13,67 @@ module.exports = {
    * Default settings
    */
 	settings: {
-		fields: ["_id", "name", "upload_name", "mime_type", "size", "path", "model", "created_by"],
-    rest: "/files",
+		fields: [
+			"_id",
+			"name",
+			"upload_name",
+			"mime_type",
+			"size",
+			"path",
+			"model",
+			"created_by",
+			"created_at",
+			"updated_at",
+			"deleted_at",
+		],
+		rest: "/files",
 	},
 
 	/**
    * Actions
    */
-	actions: {},
+	actions: {
+		/**
+     * Update
+     *
+     */
+
+		get: {
+			...routers.get,
+			async handler (ctx) {
+				return this.getEntityById(ctx, fileTransformer);
+			},
+		},
+
+		/**
+     * Update
+     *
+     */
+		list: {
+			...routers.list,
+			async handler (ctx) {
+				return this.loadList(ctx, fileTransformer);
+			},
+		},
+		/**
+     * Update
+     *
+     */
+		update: {
+			...routers.update,
+		},
+
+		/**
+     * Remove
+     *
+     */
+		remove: {
+			...routers.remove,
+		},
+	},
 
 	/**
    * Methods
    */
-	methods: {
-	},
+	methods: {},
 };

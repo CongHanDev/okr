@@ -1,15 +1,15 @@
 "use strict";
-const routers = require("../routes/user_type.route");
-const userTypeTransformer = require("../transformers/user_type.transformer");
+
 const DbService = require("../mixins/db.mixin");
+const routers = require("../routes/status.route");
+const categoryTransformer = require("../transformers/category.transformer");
 const CacheCleanerMixin = require("../mixins/cache.cleaner.mixin");
 
 module.exports = {
-	name: "user-type",
-	rest: "/user-type",
+	name: "category",
 	mixins: [
-		DbService("user_types"),
-		CacheCleanerMixin(["cache.clean.user_types"]),
+		DbService("categories"),
+		CacheCleanerMixin(["cache.clean.category"]),
 	],
 	/**
    * Default settings
@@ -19,10 +19,16 @@ module.exports = {
 			"_id",
 			"slug",
 			"name",
+			"description",
 			"created_at",
 			"updated_at",
 			"deleted_at",
 		],
+		entityValidator: {
+			slug: { type: "string" },
+			name: { type: "string" },
+			description: { type: "string", optional: true },
+		},
 	},
 
 	/**
@@ -36,6 +42,9 @@ module.exports = {
 
 		get: {
 			...routers.get,
+			async handler (ctx) {
+				return this.getEntityById(ctx, categoryTransformer);
+			},
 		},
 
 		/**
@@ -45,7 +54,7 @@ module.exports = {
 		list: {
 			...routers.list,
 			async handler (ctx) {
-				return this.loadList(ctx, userTypeTransformer);
+				return this.loadList(ctx, categoryTransformer);
 			},
 		},
 		/**
@@ -64,4 +73,9 @@ module.exports = {
 			...routers.remove,
 		},
 	},
+
+	/**
+   * Methods
+   */
+	methods: {},
 };

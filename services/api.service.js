@@ -51,26 +51,26 @@ module.exports = {
 				aliases: {},
 
 				/**
-				 * Before call hook. You can check the request.
-				 * @param {Context} ctx
-				 * @param {Object} route
-				 * @param {IncomingRequest} req
-				 * @param {ServerResponse} res
-				 * @param {Object} data
-				 *
-				onBeforeCall(ctx, route, req, res) {
+         * Before call hook. You can check the request.
+         * @param {Context} ctx
+         * @param {Object} route
+         * @param {IncomingRequest} req
+         * @param {ServerResponse} res
+         * @param {Object} data
+         *
+         onBeforeCall(ctx, route, req, res) {
 					// Set request headers to context meta
 					ctx.meta.userAgent = req.headers["user-agent"];
 				}, */
 
 				/**
-				 * After call hook. You can modify the data.
-				 * @param {Context} ctx
-				 * @param {Object} route
-				 * @param {IncomingRequest} req
-				 * @param {ServerResponse} res
-				 * @param {Object} data
-				onAfterCall(ctx, route, req, res, data) {
+         * After call hook. You can modify the data.
+         * @param {Context} ctx
+         * @param {Object} route
+         * @param {IncomingRequest} req
+         * @param {ServerResponse} res
+         * @param {Object} data
+         onAfterCall(ctx, route, req, res, data) {
 					// Async function which return with Promise
 					return doSomething(ctx, res, data);
 				}, */
@@ -110,32 +110,32 @@ module.exports = {
 			options: {},
 		},
 
-		onError(req, res, err) {
+		onError (req, res, err) {
 			res.setHeader("Content-Type", "application/json");
 			res.writeHead(err.code || 500);
 			res.end(JSON.stringify({
-        status: err.code,
+				status: err.code || 500,
 				success: false,
 				message: err.message,
-        errors: err.data
+				errors: err.data,
 			}));
-		}
+		},
 	},
 
 	methods: {
 
 		/**
-		 * Authenticate the request. It check the `Authorization` token value in the request header.
-		 * Check the token value & resolve the user by the token.
-		 * The resolved user will be available in `ctx.meta.user`
-		 *
-		 * PLEASE NOTE, IT'S JUST AN EXAMPLE IMPLEMENTATION. DO NOT USE IN PRODUCTION!
-		 *
-		 * @param {Context} ctx
-		 * @param {Object} route
-		 * @param {IncomingRequest} req
-		 * @returns {Promise}
-		 */
+     * Authenticate the request. It check the `Authorization` token value in the request header.
+     * Check the token value & resolve the user by the token.
+     * The resolved user will be available in `ctx.meta.user`
+     *
+     * PLEASE NOTE, IT'S JUST AN EXAMPLE IMPLEMENTATION. DO NOT USE IN PRODUCTION!
+     *
+     * @param {Context} ctx
+     * @param {Object} route
+     * @param {IncomingRequest} req
+     * @returns {Promise}
+     */
 		async authenticate (ctx, route, req) {
 			// Read the token from header
 			const auth = req.headers["authorization"];
@@ -157,15 +157,15 @@ module.exports = {
 		},
 
 		/**
-		 * Authorize the request. Check that the authenticated user has right to access the resource.
-		 *
-		 * PLEASE NOTE, IT'S JUST AN EXAMPLE IMPLEMENTATION. DO NOT USE IN PRODUCTION!
-		 *
-		 * @param {Context} ctx
-		 * @param {Object} route
-		 * @param {IncomingRequest} req
-		 * @returns {Promise}
-		 */
+     * Authorize the request. Check that the authenticated user has right to access the resource.
+     *
+     * PLEASE NOTE, IT'S JUST AN EXAMPLE IMPLEMENTATION. DO NOT USE IN PRODUCTION!
+     *
+     * @param {Context} ctx
+     * @param {Object} route
+     * @param {IncomingRequest} req
+     * @returns {Promise}
+     */
 		async authorize (ctx, route, req) {
 			// It check the `auth` property in action sc hema.
 			if (req.$action.auth && req.$action.auth === "required") {

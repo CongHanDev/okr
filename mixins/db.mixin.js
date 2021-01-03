@@ -2,6 +2,7 @@
 
 const fs = require("fs");
 const DbService	= require("moleculer-db");
+const responder = require("../mixins/response.mixin");
 
 /**
  * @typedef {import('moleculer').Context} Context Moleculer's Context
@@ -37,6 +38,46 @@ module.exports = function(collection) {
 			 */
 			async entityChanged(type, json, ctx) {
 				ctx.broadcast(cacheCleanEventName);
+			},
+
+			async loadList(ctx, transformer){
+				const limit = ctx.params.limit ? Number(ctx.params.limit) : process.env.LIMIT;
+				const offset = ctx.params.offset ? Number(ctx.params.offset) : 0;
+				const name = ctx.params.name || null;
+
+				let params = {
+					limit,
+					offset,
+				};
+
+				if (name) params.search = name;
+
+				let countParams;
+
+				countParams = Object.assign({}, params);
+				// Remove pagination params
+				if (countParams && countParams.limit) countParams.limit = null;
+				if (countParams && countParams.offset) countParams.offset = null;
+
+				const res = await this.Promise.all([
+					// Get rows
+					this.adapter.find(params),
+
+					// Get count of all rows
+					this.adapter.count(countParams),
+				]);
+				const page = offset ? offset : 1;
+				params.total = res[1];
+				params.currentpage = page;
+				return responder.httpOK(res[0], transformer, params);
+			},
+
+			async getEntityById(ctx, transformer){
+				const entity = await this.adapter.findById(ctx.params.id);
+				if (!entity) {
+					responder.httpNotFound();
+				}
+				return responder.httpOK(entity, transformer);
 			}
 		},
 
@@ -60,7 +101,7 @@ module.exports = function(collection) {
 
 		schema.adapter = new MongoAdapter(process.env.MONGO_URI);
 		schema.collection = collection;
-	} else if (process.env.NODE_ENV === 'test') {
+	} else if (process.env.NODE_ENV === "test") {
 		// NeDB memory adapter for testing
 		schema.adapter = new DbService.MemoryAdapter();
 	} else {

@@ -115,7 +115,7 @@ module.exports = {
 				/* Created at */
 				entity.created_at = new Date();
 				/* Status */
-				const status = await ctx.call("status.find", { query: { value: "NOT_ACTIVATE", type: "USER" } });
+				const status = await ctx.call("status.find", { query: { slug: "NOT_ACTIVATE", type: "USER" } });
 				entity.status = status[0]._id;
 
 				let errors = {};
@@ -175,35 +175,7 @@ module.exports = {
 				keys: ["#userID", "name", "limit", "offset"],
 			},
 			async handler (ctx) {
-				const limit = ctx.params.limit ? Number(ctx.params.limit) : process.env.LIMIT;
-				const offset = ctx.params.offset ? Number(ctx.params.offset) : 0;
-				const name = ctx.params.name || null;
-
-				let params = {
-					limit,
-					offset,
-				};
-
-				if (name) params.search = name;
-
-				let countParams;
-
-				countParams = Object.assign({}, params);
-				// Remove pagination params
-				if (countParams && countParams.limit) countParams.limit = null;
-				if (countParams && countParams.offset) countParams.offset = null;
-
-				const res = await this.Promise.all([
-					// Get rows
-					this.adapter.find(params),
-
-					// Get count of all rows
-					this.adapter.count(countParams),
-				]);
-				const page = offset ? offset : 1;
-				params.total = res[1];
-				params.currentpage = page;
-				return responder.httpOK(res[0], userTransformer, params);
+				return this.loadList(ctx, userTransformer);
 			},
 		},
 
@@ -215,11 +187,7 @@ module.exports = {
 		get: {
 			...routers.get,
 			async handler (ctx) {
-				const entity = await this.adapter.findById(ctx.params.id);
-				if (!entity) {
-					responder.httpNotFound();
-				}
-				return responder.httpOK(entity, userTransformer);
+				return this.getEntityById(ctx, userTransformer);
 			},
 		},
 
@@ -306,7 +274,7 @@ module.exports = {
 					return responder.httpBadRequest(translate("validate"), errors);
 				}
 				/* Status */
-				const status = await ctx.call("status.find", { query: { value: "ACTIVATED", type: "USER" } });
+				const status = await ctx.call("status.find", { query: { slug: "ACTIVATED", type: "USER" } });
 				const update = {
 					$set: {
 						status: status[0]._id,
