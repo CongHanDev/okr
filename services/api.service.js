@@ -109,6 +109,17 @@ module.exports = {
 			// Options to `server-static` module
 			options: {},
 		},
+
+		onError(req, res, err) {
+			res.setHeader("Content-Type", "application/json");
+			res.writeHead(err.code || 500);
+			res.end(JSON.stringify({
+        status: err.code,
+				success: false,
+				message: err.message,
+        errors: err.data
+			}));
+		}
 	},
 
 	methods: {

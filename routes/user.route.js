@@ -2,11 +2,11 @@ const REQUEST = require("../enums/request-type.enum");
 
 const routes = {
 	create: {
-		rest: `${ REQUEST.POST } user/registration`,
+		rest: `${ REQUEST.POST } /registration`,
 	},
 
 	list: {
-		rest: `${ REQUEST.GET } user`,
+		rest: `${ REQUEST.GET } `,
 		auth: "required",
 		params: {
 			limit: { type: "number", optional: true, convert: true },
@@ -16,19 +16,19 @@ const routes = {
 
 	get: {
 		auth: "required",
-		rest: `${ REQUEST.GET } user/:id`,
+		rest: `${ REQUEST.GET } /:id`,
 	},
 
 	update: {
-		rest: `${ REQUEST.PUT } user/:id`,
+		rest: `${ REQUEST.PUT } /:id`,
 	},
 
 	remove: {
-		rest: `${ REQUEST.DELETE } user/:id`,
+		rest: `${ REQUEST.DELETE } /:id`,
 	},
 
 	verify: {
-		rest: `${ REQUEST.PUT } user/:id/verify`,
+		rest: `${ REQUEST.PUT } /:id/verify`,
 		params: {
 			otp: {
 				type: "string",
@@ -38,7 +38,7 @@ const routes = {
 	},
 
 	passwordChange: {
-		rest: `${ REQUEST.POST } user/change-password`,
+		rest: `${ REQUEST.POST } /change-password`,
 		auth: "required",
 		params: {
 			old_password: { type: "string", min: 6 },
