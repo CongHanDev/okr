@@ -46,10 +46,7 @@ module.exports = {
 	 * @param {Object} messages
 	 */
 	httpError (messages) {
-		let res;
-		res = new MoleculerError(messages, StatusCodes.INTERNAL_SERVER_ERROR);
-		res.name = "";
-		throw res;
+		throw new MoleculerError(messages, StatusCodes.INTERNAL_SERVER_ERROR);
 	},
 
 	/**
@@ -63,9 +60,7 @@ module.exports = {
 		_.forOwn(messages, function (value, key) {
 			errors.push({ field: key, message: value });
 		});
-		let res = new MoleculerError(type, StatusCodes.BAD_REQUEST, null, errors);
-		res.name = "";
-		throw res;
+    throw new MoleculerError(type, StatusCodes.BAD_REQUEST, null, errors);
 	},
 
 	/**
@@ -74,10 +69,7 @@ module.exports = {
 	 * @param {Object} messages
 	 */
 	httpUnauthorized: function (messages = "") {
-		let res;
-		res = new MoleculerError(messages, StatusCodes.UNAUTHORIZED);
-		res.name = "Unauthorized";
-		throw res;
+		throw new MoleculerError(messages, StatusCodes.UNAUTHORIZED);
 	},
 
 	/**
@@ -86,8 +78,6 @@ module.exports = {
 	 * @param {string} messages
 	 */
 	httpNotFound (messages = "") {
-		let res = new MoleculerError(messages, StatusCodes.NOT_FOUND);
-		res.name = "Not Found";
-		throw res;
+    throw new MoleculerError(messages, StatusCodes.NOT_FOUND);
 	},
 };

@@ -17,7 +17,7 @@ module.exports = {
 			user_type: "user_type",
 			introduce: "introduce",
 			website: "website",
-			expertise: "expertise",
+			expertises: "expertises",
 			level: "level",
 			attaches: "attaches",
 			status: "status",

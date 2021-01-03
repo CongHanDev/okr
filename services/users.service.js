@@ -20,11 +20,11 @@ module.exports = {
 	],
 
 	/**
-	 * Default settings
-	 */
+   * Default settings
+   */
 	settings: {
 		/** REST Basepath */
-		rest: "/",
+		rest: "/user",
 
 		/** Public fields */
 		fields: [
@@ -43,7 +43,7 @@ module.exports = {
 			"user_type",
 			"introduce",
 			"website",
-			"expertise",
+			"expertises",
 			"level",
 			"attaches",
 			"status",
@@ -70,27 +70,38 @@ module.exports = {
 			user_type: { type: "string" },
 			introduce: { type: "string", optional: true },
 			website: { type: "string", optional: true },
-			expertise: { type: "array", items: "string", optional: true },
+			expertises: { type: "array", items: "string", optional: true },
 			level: { type: "string", optional: true },
 			attaches: { type: "array", items: "string", optional: true },
 			status: { type: "string", optional: true },
 			deposit: { type: "number", optional: true },
 			services: { type: "array", items: "string", optional: true },
 		},
+		populates: {
+			avatar: {
+				action: "files.get",
+			},
+			banner: {
+				action: "files.get",
+			},
+			user_type: {
+				action: "user-type.get",
+			},
+		},
 	},
 
 	/**
-	 * Actions
-	 */
+   * Actions
+   */
 	actions: {
 		/**
-		 * Register a new user
-		 *
-		 * @actions
-		 * @param {Object} user - User entity
-		 *
-		 * @returns {Object} Created entity & token
-		 */
+     * Register a new user
+     *
+     * @actions
+     * @param {Object} user - User entity
+     *
+     * @returns {Object} Created entity & token
+     */
 		create: {
 			...routers.create,
 			async handler (ctx) {
@@ -149,22 +160,22 @@ module.exports = {
 		},
 
 		/**
-		 * List of users.
-		 *
-		 * @actions
-		 * @param {String} name - users
-		 * @param {Number} limit - Pagination limit
-		 * @param {Number} offset - Pagination offset
-		 *
-		 * @returns {Object} List of users
-		 */
+     * List of users.
+     *
+     * @actions
+     * @param {String} name - users
+     * @param {Number} limit - Pagination limit
+     * @param {Number} offset - Pagination offset
+     *
+     * @returns {Object} List of users
+     */
 		list: {
 			...routers.list,
 			cache: {
 				keys: ["#userID", "name", "limit", "offset"],
 			},
 			async handler (ctx) {
-				const limit = ctx.params.limit ? Number(ctx.params.limit) : 20;
+				const limit = ctx.params.limit ? Number(ctx.params.limit) : process.env.LIMIT;
 				const offset = ctx.params.offset ? Number(ctx.params.offset) : 0;
 				const name = ctx.params.name || null;
 
@@ -192,16 +203,15 @@ module.exports = {
 				const page = offset ? offset : 1;
 				params.total = res[1];
 				params.currentpage = page;
-
 				return responder.httpOK(res[0], userTransformer, params);
 			},
 		},
 
 		/**
-		 * Find by id
-		 *
-		 * @param {String} id
-		 */
+     * Find by id
+     *
+     * @param {String} id
+     */
 		get: {
 			...routers.get,
 			async handler (ctx) {
@@ -214,31 +224,31 @@ module.exports = {
 		},
 
 		/**
-		 * Update
-		 *
-		 */
+     * Update
+     *
+     */
 		update: {
 			...routers.update,
 		},
 
 		/**
-		 * Remove
-		 *
-		 */
+     * Remove
+     *
+     */
 		remove: {
 			...routers.remove,
 		},
 
 		/**
-		 * change-password with username & password
-		 *
-		 * @actions
-		 * @param {Object} phone - phone credentials
-		 *
-		 * @returns {Object} oldPassword - Logged in user with token
-		 *
-		 * @returns {Object} newPassword - Logged in user with token
-		 */
+     * change-password with username & password
+     *
+     * @actions
+     * @param {Object} phone - phone credentials
+     *
+     * @returns {Object} oldPassword - Logged in user with token
+     *
+     * @returns {Object} newPassword - Logged in user with token
+     */
 		changePassword: {
 			...routers.passwordChange,
 			async handler (ctx) {
@@ -269,13 +279,13 @@ module.exports = {
 		},
 
 		/**
-		 * Get current user entity.
-		 * Auth is required!
-		 *
-		 * @actions
-		 *
-		 * @returns {String} User entity
-		 */
+     * Get current user entity.
+     * Auth is required!
+     *
+     * @actions
+     *
+     * @returns {String} User entity
+     */
 		verify: {
 			...routers.verify,
 			async handler (ctx) {
@@ -312,7 +322,7 @@ module.exports = {
 	},
 
 	/**
-	 * Methods
-	 */
+   * Methods
+   */
 	methods: {},
 };
