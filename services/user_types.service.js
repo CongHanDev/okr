@@ -17,7 +17,7 @@ module.exports = {
 	settings: {
 		fields: [
 			"_id",
-			"key",
+			"slug",
 			"name",
 			"created_at",
 			"updated_at",
