@@ -23,7 +23,7 @@ module.exports = {
 	 */
 	settings: {
 		/** REST Basepath */
-		rest: "/",
+		rest: "",
 
 		/** Public fields */
 		fields: [
@@ -91,7 +91,7 @@ module.exports = {
 		 */
 		create: {
 			...routers.create,
-			async handler (ctx) {
+			async handler(ctx) {
 				let entity = ctx.params;
 				await this.validateEntity(entity);
 				if (entity.phone) {
@@ -99,25 +99,38 @@ module.exports = {
 						phone: entity.phone,
 					});
 					if (found)
-						throw new MoleculerClientError("phone is exist!", 422, "", [
-							{ field: "phone", message: "is exist" },
-						]);
+						throw new MoleculerClientError(
+							"phone is exist!",
+							422,
+							"",
+							[{ field: "phone", message: "is exist" }]
+						);
 				}
 
 				if (entity.phone) {
-					const found = await this.adapter.findOne({ phone: entity.phone });
+					const found = await this.adapter.findOne({
+						phone: entity.phone,
+					});
 					if (found)
-						throw new MoleculerClientError("phone is exist!", 422, "", [
-							{ field: "phone", message: "is exist" },
-						]);
+						throw new MoleculerClientError(
+							"phone is exist!",
+							422,
+							"",
+							[{ field: "phone", message: "is exist" }]
+						);
 				}
 
 				if (entity.email) {
-					const found = await this.adapter.findOne({ email: entity.email });
+					const found = await this.adapter.findOne({
+						email: entity.email,
+					});
 					if (found)
-						throw new MoleculerClientError("Email is exist!", 422, "", [
-							{ field: "email", message: "is exist" },
-						]);
+						throw new MoleculerClientError(
+							"Email is exist!",
+							422,
+							"",
+							[{ field: "email", message: "is exist" }]
+						);
 				}
 
 				entity.password = bcrypt.hashSync(entity.password, 10);
@@ -162,9 +175,11 @@ module.exports = {
 			cache: {
 				keys: ["#userID", "name", "limit", "offset"],
 			},
-			async handler (ctx) {
+			async handler(ctx) {
 				const limit = ctx.params.limit ? Number(ctx.params.limit) : 20;
-				const offset = ctx.params.offset ? Number(ctx.params.offset) : 0;
+				const offset = ctx.params.offset
+					? Number(ctx.params.offset)
+					: 0;
 				const name = ctx.params.name || null;
 
 				let params = {
@@ -179,7 +194,8 @@ module.exports = {
 				countParams = Object.assign({}, params);
 				// Remove pagination params
 				if (countParams && countParams.limit) countParams.limit = null;
-				if (countParams && countParams.offset) countParams.offset = null;
+				if (countParams && countParams.offset)
+					countParams.offset = null;
 
 				const res = await this.Promise.all([
 					// Get rows
@@ -238,13 +254,16 @@ module.exports = {
 		 */
 		changePassword: {
 			...routers.passwordChange,
-			async handler (ctx) {
+			async handler(ctx) {
 				const { oldPassword, newPassword } = ctx.params;
 				const newData = await this.getById(ctx.meta.user._id);
 				if (!newData)
-					throw new MoleculerClientError("User is invalid!", 422, "", [
-						{ field: "User", message: "is not found" },
-					]);
+					throw new MoleculerClientError(
+						"User is invalid!",
+						422,
+						"",
+						[{ field: "User", message: "is not found" }]
+					);
 
 				const res = await bcrypt.compare(oldPassword, newData.password);
 				if (!res)
@@ -277,7 +296,7 @@ module.exports = {
 		 */
 		forgotPassword: {
 			...routers.passwordForgot,
-			async handler (ctx) {
+			async handler(ctx) {
 				let entity = ctx.params;
 
 				const found = await this.adapter.findOne({
@@ -285,9 +304,12 @@ module.exports = {
 				});
 
 				if (!found)
-					throw new MoleculerClientError("Email does not exist!", 422, "", [
-						{ field: "Email", message: "does not exist" },
-					]);
+					throw new MoleculerClientError(
+						"Email does not exist!",
+						422,
+						"",
+						[{ field: "Email", message: "does not exist" }]
+					);
 
 				await email.sendPasswordReset(found);
 				return responder.httpOK();
@@ -307,7 +329,7 @@ module.exports = {
 		 */
 		resetPassword: {
 			...routers.passwordReset,
-			async handler (ctx) {
+			async handler(ctx) {
 				let entity = ctx.params;
 
 				const newData = await this.adapter.findOne({
@@ -315,9 +337,12 @@ module.exports = {
 				});
 
 				if (!newData)
-					throw new MoleculerClientError("Email does not exist!", 422, "", [
-						{ field: "Email", message: "does not exist" },
-					]);
+					throw new MoleculerClientError(
+						"Email does not exist!",
+						422,
+						"",
+						[{ field: "Email", message: "does not exist" }]
+					);
 
 				newData.updatedAt = new Date();
 				newData.password = bcrypt.hashSync(entity.newPassword, 10);
@@ -342,7 +367,7 @@ module.exports = {
 		 */
 		social: {
 			...routers.social,
-			async handler (ctx) {
+			async handler(ctx) {
 				const { access_token, social } = ctx.params.user;
 				let user = {};
 				if (social === "facebook") {
@@ -351,7 +376,9 @@ module.exports = {
 					user = await this.google(access_token);
 				}
 
-				const newData = await this.adapter.findOne({ email: user.email });
+				const newData = await this.adapter.findOne({
+					email: user.email,
+				});
 				if (!newData) {
 					user.firstname = user.firstname || "";
 					user.lastname = user.lastname || "";
@@ -377,14 +404,17 @@ module.exports = {
 		 */
 		verify: {
 			...routers.verify,
-			async handler (ctx) {
+			async handler(ctx) {
 				const newData = ctx.params;
 				newData.status = "1";
 				newData.updatedAt = new Date();
 				const update = {
 					$set: newData,
 				};
-				const doc = await this.adapter.updateById(ctx.meta.user._id, update);
+				const doc = await this.adapter.updateById(
+					ctx.meta.user._id,
+					update
+				);
 				return responder.httpOK(doc, userTransformer);
 			},
 		},
@@ -395,7 +425,7 @@ module.exports = {
 		 */
 		avatar: {
 			...routers.avatar,
-			async handler (ctx) {
+			async handler(ctx) {
 				const newData = ctx.params;
 				// eslint-disable-next-line no-self-assign
 				newData.image = newData.image;
@@ -404,7 +434,10 @@ module.exports = {
 					$set: newData,
 				};
 
-				const doc = await this.adapter.updateById(ctx.meta.user._id, update);
+				const doc = await this.adapter.updateById(
+					ctx.meta.user._id,
+					update
+				);
 				return responder.httpOK(doc, userTransformer);
 			},
 		},
@@ -418,7 +451,7 @@ module.exports = {
 		 */
 		sentOTP: {
 			...routers.sentOTP,
-			async handler (ctx) {
+			async handler(ctx) {
 				const newData = ctx.params;
 				const phoneNumber = newData.phone;
 				const identitytoolkit = google.identitytoolkit({
@@ -429,7 +462,7 @@ module.exports = {
 					{
 						phoneNumber,
 						recaptchaToken: "generated_recaptcha_token",
-					},
+					}
 				);
 
 				const selectInfo = response.data.sessionInfo;
@@ -455,11 +488,12 @@ module.exports = {
 		 */
 		follow: {
 			...routers.follow,
-			async handler (ctx) {
+			async handler(ctx) {
 				const user = await this.adapter.findOne({
 					phone: ctx.params.phone,
 				});
-				if (!user) throw new MoleculerClientError("User not found!", 404);
+				if (!user)
+					throw new MoleculerClientError("User not found!", 404);
 
 				await ctx.call("follows.add", {
 					user: ctx.meta.user._id.toString(),
@@ -481,11 +515,12 @@ module.exports = {
 		 */
 		unfollow: {
 			...routers.unfollow,
-			async handler (ctx) {
+			async handler(ctx) {
 				const user = await this.adapter.findOne({
 					phone: ctx.params.phone,
 				});
-				if (!user) throw new MoleculerClientError("User not found!", 404);
+				if (!user)
+					throw new MoleculerClientError("User not found!", 404);
 
 				await ctx.call("follows.delete", {
 					user: ctx.meta.user._id.toString(),
@@ -501,20 +536,26 @@ module.exports = {
 	 * Methods
 	 */
 	methods: {
-
 		/**
 		 * Get info in facebook.
 		 *
 		 * @param {String} access_token
 		 */
-		async facebook (access_token) {
+		async facebook(access_token) {
 			const fields = "id, name, email, picture";
 			const url = "https://graph.facebook.com/me";
 			const params = { access_token, fields };
 			console.log("response", params);
 			const response = await axios.get(url, { params });
 
-			const { id, first_name, last_name, email, picture, name } = response.data;
+			const {
+				id,
+				first_name,
+				last_name,
+				email,
+				picture,
+				name,
+			} = response.data;
 			return {
 				service: "facebook",
 				image: picture.data.url,
@@ -530,7 +571,7 @@ module.exports = {
 		 *
 		 * @param {String} access_token
 		 */
-		async google (access_token) {
+		async google(access_token) {
 			const url = "https://www.googleapis.com/oauth2/v3/userinfo";
 			const params = { access_token };
 			const response = await axios.get(url, { params });
@@ -551,10 +592,12 @@ module.exports = {
 		 * @param {Array} entities
 		 * @param {Object} user - Logged in user
 		 */
-		async transformResult (ctx, entities, user) {
+		async transformResult(ctx, entities, user) {
 			if (Array.isArray(entities)) {
 				const rows = await this.Promise.all(
-					entities.map((item) => this.transformEntities(ctx, item, user)),
+					entities.map((item) =>
+						this.transformEntities(ctx, item, user)
+					)
 				);
 				return { rows };
 			} else {
@@ -570,7 +613,7 @@ module.exports = {
 		 * @param {Object} entity
 		 * @param {Object} user - Logged in user
 		 */
-		async transformEntities (ctx, entity, loggedInUser) {
+		async transformEntities(ctx, entity, loggedInUser) {
 			if (!entity) return this.Promise.resolve();
 			return entity;
 		},

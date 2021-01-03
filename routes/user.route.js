@@ -2,7 +2,7 @@ const REQUEST = require("../enums/request-type.enum");
 
 const routes = {
 	create: {
-		rest: `${ REQUEST.POST }/users/registration`,
+		rest: `${REQUEST.POST} /users/registration`,
 		params: {
 			phone: {
 				type: "string",
@@ -17,7 +17,7 @@ const routes = {
 	},
 
 	getAll: {
-		rest: `${ REQUEST.GET } /users`,
+		rest: `${REQUEST.GET} /users`,
 		params: {
 			limit: { type: "number", optional: true, convert: true },
 			offset: { type: "number", optional: true, convert: true },
@@ -25,11 +25,11 @@ const routes = {
 	},
 
 	find: {
-		rest: `${ REQUEST.GET } /users/:id`,
+		rest: `${REQUEST.GET} /users/:id`,
 	},
 
 	update: {
-		rest: `${ REQUEST.PUT } /users/:id`,
+		rest: `${REQUEST.PUT} /users/:id`,
 		params: {
 			phone: {
 				type: "string",
@@ -59,16 +59,16 @@ const routes = {
 	},
 
 	remove: {
-		rest: `${ REQUEST.DELETE } /users/:id`,
+		rest: `${REQUEST.DELETE} /users/:id`,
 	},
 
 	verify: {
-		rest: `${ REQUEST.PUT } /user/verify`,
+		rest: `${REQUEST.PUT} /user/verify`,
 		auth: "required",
 	},
 
 	social: {
-		rest: `${ REQUEST.POST } /users/social`,
+		rest: `${REQUEST.POST} /users/social`,
 		params: {
 			user: {
 				type: "object",
@@ -81,19 +81,19 @@ const routes = {
 	},
 
 	avatar: {
-		rest: `${ REQUEST.POST } /user/avatar`,
+		rest: `${REQUEST.POST} /user/avatar`,
 		auth: "required",
 	},
 
 	sentOTP: {
-		rest: `${ REQUEST.POST } /user/sentOTP`,
+		rest: `${REQUEST.POST} /user/sentOTP`,
 		params: {
 			phone: { type: "string", min: 6 },
 		},
 	},
 
 	follow: {
-		rest: `${ REQUEST.POST } /profiles/:phone/follow`,
+		rest: `${REQUEST.POST} /profiles/:phone/follow`,
 		auth: "required",
 		params: {
 			phone: { type: "string" },
@@ -101,7 +101,7 @@ const routes = {
 	},
 
 	unfollow: {
-		rest: `${ REQUEST.POST } /profiles/:phone/follow`,
+		rest: `${REQUEST.POST} /profiles/:phone/follow`,
 		auth: "required",
 		params: {
 			username: { type: "string" },
@@ -109,7 +109,7 @@ const routes = {
 	},
 
 	passwordChange: {
-		rest: `${ REQUEST.POST } /users/change-password`,
+		rest: `${REQUEST.POST} /users/change-password`,
 		params: {
 			oldPassword: { type: "string", min: 6 },
 			newPassword: { type: "string", min: 6 },
@@ -117,14 +117,14 @@ const routes = {
 	},
 
 	passwordForgot: {
-		rest: `${ REQUEST.POST } /user/forgot-password`,
+		rest: `${REQUEST.POST} /user/forgot-password`,
 		params: {
 			email: { type: "email" },
 		},
 	},
 
 	passwordReset: {
-		rest: `${ REQUEST.POST } /user/reset-password`,
+		rest: `${REQUEST.POST} /user/reset-password`,
 		auth: "required",
 		params: {
 			email: { type: "email" },
