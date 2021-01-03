@@ -1,6 +1,7 @@
 "use strict";
 
 const ApiGateway = require("moleculer-web");
+const responder = require("../mixins/response.mixin");
 
 /**
  * @typedef {import('moleculer').Context} Context Moleculer's Context
@@ -132,10 +133,10 @@ module.exports = {
 				// Check the token. Tip: call a service which verify the token. E.g. `accounts.resolveToken`
 				const userID = await ctx.call("auth.resolveToken", { token });
 				if (userID) {
-					ctx.meta.auth = {id: userID};
+					ctx.meta.auth = { id: userID };
 				} else {
 					// Invalid token
-					throw new ApiGateway.Errors.UnAuthorizedError(ApiGateway.Errors.ERR_INVALID_TOKEN);
+					responder.httpUnauthorized(ApiGateway.Errors.ERR_INVALID_TOKEN);
 				}
 			} else {
 				// No token. Throw an error or do nothing if anonymous access is allowed.
@@ -159,13 +160,12 @@ module.exports = {
 			if (req.$action.auth && req.$action.auth === "required") {
 				// Get the authenticated user.
 				let user = null;
-				if(ctx.meta.auth) {
-					const userID = ctx.meta.auth.id;
-					user = await ctx.call("users.find", { query: {_id: ctx.meta.auth.id || ""}});
+				if (ctx.meta.auth) {
+					user = await ctx.call("users.find", { query: { _id: ctx.meta.auth.id || "" } });
 					ctx.meta.user = user;
 				}
 				if (!user) {
-					throw new ApiGateway.Errors.UnAuthorizedError("NO_RIGHTS");
+					responder.httpUnauthorized();
 				}
 			}
 		},

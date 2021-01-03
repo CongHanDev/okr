@@ -1,15 +1,16 @@
 "use strict";
 
-const { MoleculerClientError } = require("moleculer").Errors;
+const { translate } = require("../languages/index.language");
 const routers = require("../routes/user.route");
 const bcrypt = require("bcryptjs");
-const axios = require("axios");
 const userTransformer = require("../transformers/user.transformer");
 const responder = require("../mixins/response.mixin");
 const DbService = require("../mixins/db.mixin");
 const CacheCleanerMixin = require("../mixins/cache.cleaner.mixin");
-const email = require("../utits/emails/emailProvider");
-const { google } = require("googleapis");
+const email = require("../utils/emails/emailProvider");
+const _ = require("lodash");
+const uuid = require("uuid");
+const cryptoRandomString = require("crypto-random-string");
 
 module.exports = {
 	name: "users",
@@ -29,51 +30,52 @@ module.exports = {
 		fields: [
 			"_id",
 			"password",
-			"phone",
+			"avatar",
+			"banner",
 			"email",
-			"firstname",
-			"lastname",
-			"bio",
-			"image",
-			"cityId",
-			"passport",
-			"birtday",
+			"firs_tname",
+			"last_name",
+			"phone",
+			"city",
+			"identity_card",
+			"birthday",
 			"address",
-			"personType",
-			"title",
+			"user_type",
 			"introduce",
 			"website",
-			"areasOfExpertise",
+			"expertise",
 			"level",
-			"attach",
-			"services",
+			"attaches",
 			"status",
-			"demons",
-			"role",
+			"deposit",
+			"services",
+			"otp",
+			"created_at",
+			"updated_at",
+			"deleted_at",
 		],
 
 		/** Validator schema for entity */
 		entityValidator: {
-			phone: { type: "string", min: 2 },
-			password: { type: "string", min: 6 },
-			firstname: { type: "string", min: 2 },
-			lastname: { type: "string", min: 2 },
+			avatar: { type: "string", optional: true },
+			banner: { type: "string", optional: true },
 			email: { type: "email" },
-			bio: { type: "string", optional: true },
-			image: { type: "string", optional: true },
-			cityId: { type: "string", optional: true },
-			passport: { type: "string", min: 8, optional: true },
-			birtday: { type: "date", optional: true },
-			personType: { type: "string", optional: true },
-			title: { type: "string", optional: true },
+			first_name: { type: "string" },
+			last_name: { type: "string" },
+			phone: { type: "string", min: 8, pattern: /^[a-zA-Z0-9]+$/ },
+			city: { type: "string", optional: true },
+			identity_card: { type: "string", optional: true },
+			birthday: { type: "date", optional: true },
 			address: { type: "string", optional: true },
+			user_type: { type: "string" },
 			introduce: { type: "string", optional: true },
-			areasOfExpertiseId: { type: "string", optional: true },
-			levelId: { type: "string", optional: true },
-			attach: { type: "string", optional: true },
-			services: { type: "array", items: "string", optional: true },
+			website: { type: "string", optional: true },
+			expertise: { type: "array", items: "string", optional: true },
+			level: { type: "string", optional: true },
+			attaches: { type: "array", items: "string", optional: true },
 			status: { type: "string", optional: true },
-			demons: { type: "number", optional: true },
+			deposit: { type: "number", optional: true },
+			services: { type: "array", items: "string", optional: true },
 		},
 	},
 
@@ -92,58 +94,57 @@ module.exports = {
 		create: {
 			...routers.create,
 			async handler (ctx) {
-				let entity = ctx.params;
-				await this.validateEntity(entity);
-				if (entity.phone) {
-					const found = await this.adapter.findOne({
-						phone: entity.phone,
-					});
-					if (found)
-						throw new MoleculerClientError("phone is exist!", 422, "", [
-							{ field: "phone", message: "is exist" },
-						]);
+				let request = ctx.params;
+				const entity = await this.validateEntity(request);
+				/* Set OTP */
+				const otp = cryptoRandomString({ length: 10 }).toUpperCase();
+				entity.otp = otp;
+				/* Set ID */
+				entity._id = uuid.v4();
+				/* Created at */
+				entity.created_at = new Date();
+				/* Status */
+				const status = await ctx.call("status.find", { query: { value: "NOT_ACTIVATE", type: "USER" } });
+				entity.status = status[0]._id;
+
+				let errors = {};
+				/* Validate password */
+				if (!_.has(entity, "password")) {
+					errors.password = translate("password_required");
+				} else {
+					entity.password = bcrypt.hashSync(entity.password, 10);
 				}
-
-				if (entity.phone) {
-					const found = await this.adapter.findOne({ phone: entity.phone });
-					if (found)
-						throw new MoleculerClientError("phone is exist!", 422, "", [
-							{ field: "phone", message: "is exist" },
-						]);
+				/* Validate phone number */
+				let found = await this.adapter.findOne({ phone: entity.phone });
+				if (found) {
+					errors.phone = translate("phone_exists");
 				}
-
-				if (entity.email) {
-					const found = await this.adapter.findOne({ email: entity.email });
-					if (found)
-						throw new MoleculerClientError("Email is exist!", 422, "", [
-							{ field: "email", message: "is exist" },
-						]);
+				/* Validate email */
+				found = await this.adapter.findOne({ email: entity.email });
+				if (found) {
+					errors.email = translate("email_exists");
 				}
+				/* Errors */
+				if (_.keys(errors).length) {
+					return responder.httpBadRequest(translate("validate"), errors);
+				}
+				/* Map to entity */
+				let newEntity = {};
+				_.values(this.settings.fields).forEach((key) => {
+					newEntity[key] = entity[key] || null;
+				});
 
-				entity.password = bcrypt.hashSync(entity.password, 10);
-				entity.firstname = entity.firstname || "";
-				entity.lastname = entity.lastname || "";
-				entity.bio = entity.bio || "";
-				entity.image = entity.image || "";
-				entity.passport = entity.passport || null;
-				entity.birtday = entity.birtday || null;
-				entity.personType = entity.personType || null;
-				entity.title = entity.title || "";
-				entity.address = entity.address || "";
-				entity.introduce = entity.introduce || "";
-				entity.areasOfExpertiseId = entity.areasOfExpertiseId || "";
-				entity.levelId = entity.levelId || "";
-				entity.attach = entity.attach || "";
-				entity.services = entity.services || null;
-				entity.demons = entity.demons || "";
-				entity.status = "";
-				entity.role = 1;
-				entity.createdAt = new Date();
-
-				const doc = await this.adapter.insert(entity);
-				const user = await this.transformDocuments(ctx, {}, doc);
-				await this.entityChanged("created", user, ctx);
-				return responder.httpOK(user, userTransformer);
+				/* Send OTP */
+				const isSend = await email.sendOTP(newEntity);
+				/* Response */
+				if (isSend) {
+					/* Insert to database */
+					const doc = await this.adapter.insert(newEntity);
+					await this.entityChanged("created", doc, ctx);
+					return responder.httpOK(doc, userTransformer);
+				} else {
+					return responder.httpError(translate("send_email_error"));
+				}
 			},
 		},
 
@@ -157,8 +158,8 @@ module.exports = {
 		 *
 		 * @returns {Object} List of users
 		 */
-		getAll: {
-			...routers.getAll,
+		list: {
+			...routers.list,
 			cache: {
 				keys: ["#userID", "name", "limit", "offset"],
 			},
@@ -188,17 +189,11 @@ module.exports = {
 					// Get count of all rows
 					this.adapter.count(countParams),
 				]);
-				const docs = await this.transformDocuments(ctx, params, res[0]);
-
 				const page = offset ? offset : 1;
+				params.total = res[1];
+				params.currentpage = page;
 
-				const r = await this.transformResult(ctx, docs, ctx.meta.user);
-				r.totalRows = res[1];
-				r.limit = limit;
-				r.offset = page;
-				r.totalPages = Math.ceil(res[1] / limit);
-
-				return responder.httpOK(r, userTransformer);
+				return responder.httpOK(res[0], userTransformer, params);
 			},
 		},
 
@@ -207,8 +202,15 @@ module.exports = {
 		 *
 		 * @param {String} id
 		 */
-		find: {
-			...routers.find,
+		get: {
+			...routers.get,
+			async handler (ctx) {
+				const entity = await this.adapter.findById(ctx.params.id);
+				if (!entity) {
+					responder.httpNotFound();
+				}
+				return responder.httpOK(entity, userTransformer);
+			},
 		},
 
 		/**
@@ -218,6 +220,7 @@ module.exports = {
 		update: {
 			...routers.update,
 		},
+
 		/**
 		 * Remove
 		 *
@@ -239,131 +242,29 @@ module.exports = {
 		changePassword: {
 			...routers.passwordChange,
 			async handler (ctx) {
-				const { oldPassword, newPassword } = ctx.params;
-				const newData = await this.getById(ctx.meta.user._id);
-				if (!newData)
-					throw new MoleculerClientError("User is invalid!", 422, "", [
-						{ field: "User", message: "is not found" },
-					]);
-
-				const res = await bcrypt.compare(oldPassword, newData.password);
-				if (!res)
-					throw new MoleculerClientError("Wrong password!", 422, "", [
-						{ field: "password", message: "is not found" },
-					]);
-
-				newData.updatedAt = new Date();
-				newData.password = bcrypt.hashSync(newPassword, 10);
-				const update = {
-					$set: newData,
-				};
-				const doc = await this.adapter.updateById(newData._id, update);
-
-				const user = await this.transformDocuments(ctx, {}, doc);
-				await this.entityChanged("updated", user, ctx);
-				return responder.httpOK(user, userTransformer);
-			},
-		},
-
-		/**
-		 * forgot-password.
-		 * Auth is required!
-		 *
-		 * @actions
-
-		 * @param {Object} email - email entity
-		 *
-		 * @returns {Object} Created email entity
-		 */
-		forgotPassword: {
-			...routers.passwordForgot,
-			async handler (ctx) {
-				let entity = ctx.params;
-
-				const found = await this.adapter.findOne({
-					email: entity.email,
-				});
-
-				if (!found)
-					throw new MoleculerClientError("Email does not exist!", 422, "", [
-						{ field: "Email", message: "does not exist" },
-					]);
-
-				await email.sendPasswordReset(found);
-				return responder.httpOK();
-			},
-		},
-
-		/**
-		 *  reset-password.
-		 * Auth is required!
-		 *
-		 * @actions
-
-		 * @param {String} email - email entity
-		 * @param {String} newPassword - email entity
-		 *
-		 * @returns {Object} Created email entity
-		 */
-		resetPassword: {
-			...routers.passwordReset,
-			async handler (ctx) {
-				let entity = ctx.params;
-
-				const newData = await this.adapter.findOne({
-					email: entity.email,
-				});
-
-				if (!newData)
-					throw new MoleculerClientError("Email does not exist!", 422, "", [
-						{ field: "Email", message: "does not exist" },
-					]);
-
-				newData.updatedAt = new Date();
-				newData.password = bcrypt.hashSync(entity.newPassword, 10);
-				const update = {
-					$set: newData,
-				};
-				const doc = await this.adapter.updateById(newData._id, update);
-
-				const user = await this.transformDocuments(ctx, {}, doc);
-				await this.entityChanged("updated", user, ctx);
-				return responder.httpOK(user, userTransformer);
-			},
-		},
-
-		/**
-		 * Facebook with username & password
-		 *
-		 * @actions
-		 * @param {Object} user - User credentials
-		 *
-		 * @returns {Object} Logged in user with token
-		 */
-		social: {
-			...routers.social,
-			async handler (ctx) {
-				const { access_token, social } = ctx.params.user;
-				let user = {};
-				if (social === "facebook") {
-					user = await this.facebook(access_token);
-				} else {
-					user = await this.google(access_token);
+				const { old_password, new_password } = ctx.params;
+				const user = await this.getById(ctx.meta.auth.id);
+				if (!user) {
+					return responder.httpNotFound();
 				}
-
-				const newData = await this.adapter.findOne({ email: user.email });
-				if (!newData) {
-					user.firstname = user.firstname || "";
-					user.lastname = user.lastname || "";
-					user.bio = user.bio || "";
-					user.image = user.image || null;
-					user.createdAt = new Date();
-					await this.adapter.insert(user);
-				} else {
-					user = { ...newData };
+				let errors = {};
+				const res = await bcrypt.compare(old_password, user.password);
+				if (!res) {
+					errors.old_password = translate("old_password_not_mach");
 				}
-				const doc = await this.transformDocuments(ctx, {}, user);
-				return responder.httpOK(doc, userTransformer);
+				/* Errors */
+				if (_.keys(errors).length) {
+					return responder.httpBadRequest(translate("validate"), errors);
+				}
+				const update = {
+					$set: {
+						password: bcrypt.hashSync(new_password, 10),
+						updated_at: new Date(),
+					},
+				};
+				const doc = await this.adapter.updateById(user._id, update);
+				await this.entityChanged("updated", doc, ctx);
+				return responder.httpOK(user, userTransformer);
 			},
 		},
 
@@ -378,120 +279,33 @@ module.exports = {
 		verify: {
 			...routers.verify,
 			async handler (ctx) {
-				const newData = ctx.params;
-				newData.status = "1";
-				newData.updatedAt = new Date();
+				let request = ctx.params;
+				let errors = {};
+				const entity = await this.adapter.findById(request.id);
+				if (!entity) {
+					return responder.httpNotFound();
+				}
+				/* Validate otp */
+				if (!_.has(request, "otp")) {
+					errors.otp = translate("otp_required");
+				}
+				if (entity.otp !== request.otp) {
+					errors.otp = translate("otp_validate");
+				}
+				if (_.keys(errors).length) {
+					return responder.httpBadRequest(translate("validate"), errors);
+				}
+				/* Status */
+				const status = await ctx.call("status.find", { query: { value: "ACTIVATED", type: "USER" } });
 				const update = {
-					$set: newData,
-				};
-				const doc = await this.adapter.updateById(ctx.meta.user._id, update);
-				return responder.httpOK(doc, userTransformer);
-			},
-		},
-
-		/**
-		 * Update avatar.
-		 *
-		 */
-		avatar: {
-			...routers.avatar,
-			async handler (ctx) {
-				const newData = ctx.params;
-				// eslint-disable-next-line no-self-assign
-				newData.image = newData.image;
-				newData.updatedAt = new Date();
-				const update = {
-					$set: newData,
-				};
-
-				const doc = await this.adapter.updateById(ctx.meta.user._id, update);
-				return responder.httpOK(doc, userTransformer);
-			},
-		},
-
-		/**
-		 * Get current user entity.
-		 *
-		 * @actions
-		 *
-		 * @returns {String} User entity
-		 */
-		sentOTP: {
-			...routers.sentOTP,
-			async handler (ctx) {
-				const newData = ctx.params;
-				const phoneNumber = newData.phone;
-				const identitytoolkit = google.identitytoolkit({
-					auth: "AIzaSyCfZ0pClVVlqMdTdiwC6yWgEWB9XUJEibY",
-					version: "v3",
-				});
-				const response = await identitytoolkit.relyingparty.sendVerificationCode(
-					{
-						phoneNumber,
-						recaptchaToken: "generated_recaptcha_token",
+					$set: {
+						status: status[0]._id,
+						updated_at: new Date(),
 					},
-				);
-
-				const selectInfo = response.data.sessionInfo;
-
-				newData.status = "1";
-				newData.updatedAt = new Date();
-				const update = {
-					$set: newData,
 				};
-				await this.adapter.updateById(ctx.meta.user._id, update);
-				return selectInfo;
-			},
-		},
-
-		/**
-		 * Follow a user
-		 * Auth is required!
-		 *
-		 * @actions
-		 *
-		 * @param {String} phone - Followed phone
-		 * @returns {Object} Current user entity
-		 */
-		follow: {
-			...routers.follow,
-			async handler (ctx) {
-				const user = await this.adapter.findOne({
-					phone: ctx.params.phone,
-				});
-				if (!user) throw new MoleculerClientError("User not found!", 404);
-
-				await ctx.call("follows.add", {
-					user: ctx.meta.user._id.toString(),
-					follow: user._id.toString(),
-				});
-				const doc = await this.transformDocuments(ctx, {}, user);
-				return responder.httpOK(doc, userTransformer);
-			},
-		},
-
-		/**
-		 * Unfollow a user
-		 * Auth is required!
-		 *
-		 * @actions
-		 *
-		 * @param {String} username - Unfollowed username
-		 * @returns {Object} Current user entity
-		 */
-		unfollow: {
-			...routers.unfollow,
-			async handler (ctx) {
-				const user = await this.adapter.findOne({
-					phone: ctx.params.phone,
-				});
-				if (!user) throw new MoleculerClientError("User not found!", 404);
-
-				await ctx.call("follows.delete", {
-					user: ctx.meta.user._id.toString(),
-					follow: user._id.toString(),
-				});
-				const doc = await this.transformDocuments(ctx, {}, user);
+				/* Update database */
+				const doc = await this.adapter.updateById(entity._id, update);
+				await this.entityChanged("updated", doc, ctx);
 				return responder.httpOK(doc, userTransformer);
 			},
 		},
@@ -500,79 +314,5 @@ module.exports = {
 	/**
 	 * Methods
 	 */
-	methods: {
-
-		/**
-		 * Get info in facebook.
-		 *
-		 * @param {String} access_token
-		 */
-		async facebook (access_token) {
-			const fields = "id, name, email, picture";
-			const url = "https://graph.facebook.com/me";
-			const params = { access_token, fields };
-			console.log("response", params);
-			const response = await axios.get(url, { params });
-
-			const { id, first_name, last_name, email, picture, name } = response.data;
-			return {
-				service: "facebook",
-				image: picture.data.url,
-				id,
-				first_name: first_name || name,
-				email,
-				last_name,
-			};
-		},
-
-		/**
-		 * Get info in google.
-		 *
-		 * @param {String} access_token
-		 */
-		async google (access_token) {
-			const url = "https://www.googleapis.com/oauth2/v3/userinfo";
-			const params = { access_token };
-			const response = await axios.get(url, { params });
-			const { sub, name, email, picture } = response.data;
-			return {
-				service: "google",
-				image: picture,
-				id: sub,
-				firstname: name,
-				email,
-			};
-		},
-
-		/**
-		 * Transform the result entities to follow the RealWorld API spec
-		 *
-		 * @param {Context} ctx
-		 * @param {Array} entities
-		 * @param {Object} user - Logged in user
-		 */
-		async transformResult (ctx, entities, user) {
-			if (Array.isArray(entities)) {
-				const rows = await this.Promise.all(
-					entities.map((item) => this.transformEntities(ctx, item, user)),
-				);
-				return { rows };
-			} else {
-				const rows = await this.transformEntities(ctx, entities, user);
-				return { rows };
-			}
-		},
-
-		/**
-		 * Transform a result entity to follow the RealWorld API spec
-		 *
-		 * @param {Context} ctx
-		 * @param {Object} entity
-		 * @param {Object} user - Logged in user
-		 */
-		async transformEntities (ctx, entity, loggedInUser) {
-			if (!entity) return this.Promise.resolve();
-			return entity;
-		},
-	},
+	methods: {},
 };

@@ -21,6 +21,7 @@
   "devDependencies": {
     "axios": "^0.21.1",
     "bcryptjs": "^2.4.3",
+    "crypto-random-string": "^3.3.0",
     "dotenv": "^8.2.0",
     "email-templates": "^8.0.2",
     "eslint": "^7.7.0",

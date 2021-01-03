@@ -1,3 +1,4 @@
+"use strict";
 const REQUEST = require("../enums/request-type.enum");
 
 const routes = {
@@ -5,7 +6,7 @@ const routes = {
 		rest: `${ REQUEST.POST } /login`,
 	},
 	me: {
-		rest: `${ REQUEST.GET } /me`,
+		rest: "/me",
 		auth: "required",
 	},
 };

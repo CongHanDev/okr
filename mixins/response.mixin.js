@@ -1,35 +1,55 @@
 const nodeJsonTransformer = require("json-transformer-node");
 const { StatusCodes } = require("http-status-codes");
+const { MoleculerError } = require("moleculer").Errors;
 const _ = require("lodash");
 
 module.exports = {
 	/**
 	 * Response success with status 200
 	 *
-	 * @param {Object} data
+	 * @param {Object} data || {Array} data
 	 * @param {Object} transformer
 	 */
-	httpOK (data = null, transformer = null) {
-		if (!data && !transformer) {
-			return {};
-		} else if (data && !transformer) {
-			return data;
-		}
-		if (_.has(data, "rows")) {
-			let result = data.rows.map((record) => {
+	httpOK (data = null, transformer = null, params = null) {
+		if (Array.isArray(data)) {
+			let result = data.map((record) => {
 				return nodeJsonTransformer.transform(record, transformer);
 			});
+
+			let paginate = {
+				count: data.length,
+				total: params.total,
+				limit: params.limit,
+				offset: params.currentpage,
+				total_pages: Math.ceil(params.total / params.limit),
+			};
+
 			return {
 				status: StatusCodes.OK,
 				success: true,
 				data: result,
+				pagination: paginate,
 			};
 		}
+
 		return {
 			status: StatusCodes.OK,
 			success: true,
-			data: nodeJsonTransformer.transform(data, transformer),
+			data: transformer ? nodeJsonTransformer.transform(data, transformer) : data,
 		};
+	},
+
+	/**
+	 * Response bad request with status 400
+	 *
+	 * @param {String} type
+	 * @param {Object} messages
+	 */
+	httpError (messages) {
+		let res;
+		res = new MoleculerError(messages, StatusCodes.INTERNAL_SERVER_ERROR);
+		res.name = "";
+		throw res;
 	},
 
 	/**
@@ -43,12 +63,9 @@ module.exports = {
 		_.forOwn(messages, function (value, key) {
 			errors.push({ field: key, message: value });
 		});
-		return {
-			status: StatusCodes.BAD_REQUEST,
-			success: false,
-			type: type,
-			errors: errors,
-		};
+		let res = new MoleculerError(type, StatusCodes.BAD_REQUEST, null, errors);
+		res.name = "";
+		throw res;
 	},
 
 	/**
@@ -56,12 +73,21 @@ module.exports = {
 	 *
 	 * @param {Object} messages
 	 */
-	httpUnauthorized (messages) {
-		return {
-			status: StatusCodes.UNAUTHORIZED,
-			success: false,
-			type: "Unauthorized",
-			errors: { messages: messages },
-		};
+	httpUnauthorized: function (messages = "") {
+		let res;
+		res = new MoleculerError(messages, StatusCodes.UNAUTHORIZED);
+		res.name = "Unauthorized";
+		throw res;
+	},
+
+	/**
+	 * Response unauthorized with status 401
+	 *
+	 * @param {string} messages
+	 */
+	httpNotFound (messages = "") {
+		let res = new MoleculerError(messages, StatusCodes.NOT_FOUND);
+		res.name = "Not Found";
+		throw res;
 	},
 };

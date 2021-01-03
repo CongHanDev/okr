@@ -4,4 +4,12 @@ module.exports = {
 	unauthorized: "Unauthorized",
 	user_name_invalid: "Email or phone is invalid.",
 	password_invalid: "Password is not match.",
+	phone_exists: "Phone has been exists.",
+	email_exists: "Email has been exists.",
+	password_required: "Password can not empty.",
+	otp_required: "OTP can not empty.",
+	otp_validate: "OTP invalidate.",
+	validate: "Validation",
+	old_password_not_mach: "Old password not match",
+	send_email_error: "Can't send email",
 };
