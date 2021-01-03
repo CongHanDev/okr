@@ -8,6 +8,7 @@ module.exports = {
 			mime_type: "mime_type",
 			size: "size",
 			path: "path",
+			model: "model",
 		},
 	},
 };

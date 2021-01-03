@@ -81,7 +81,7 @@ exports.sendOTP = async (user) => {
 	const htmlContent = `
 	<div class="card text-center">
 			<div class="card-body">
-					<div class="card-title">Your acount verification code is <span style="background-color: #0d6efd!important;color: #fff!important;padding: .5rem!important;"><strong> ${ user.otp }</strong></span></div>
+					<div class="card-title">Your account verification code is <span style="background-color: #0d6efd!important;color: #fff!important;padding: .5rem!important;"><strong> ${ user.otp }</strong></span></div>
 			</div>
 	</div>
 	`;

@@ -1,6 +1,7 @@
 "use strict";
 
 const DbService = require("../mixins/db.mixin");
+const CacheCleanerMixin = require("../mixins/cache.cleaner.mixin");
 const routers = require("../routes/file.route");
 const fileTransformer = require("../transformers/file.transformer");
 
@@ -8,6 +9,7 @@ module.exports = {
 	name: "files",
 	mixins: [
 		DbService("files"),
+		CacheCleanerMixin(["cache.clean.files"]),
 	],
 	/**
    * Default settings
@@ -26,7 +28,6 @@ module.exports = {
 			"updated_at",
 			"deleted_at",
 		],
-		rest: "/files",
 	},
 
 	/**
@@ -38,7 +39,7 @@ module.exports = {
      *
      */
 
-		get: {
+		getById: {
 			...routers.get,
 			async handler (ctx) {
 				return this.getEntityById(ctx, fileTransformer);
