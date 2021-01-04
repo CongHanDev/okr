@@ -24,6 +24,20 @@ module.exports = {
 		// Global Express middlewares. More info: https://moleculer.services/docs/0.14/moleculer-web.html#Middlewares
 		use: [],
 
+		cors: {
+			//Configures the Access-Control-Allow-Origin CORS header.
+			origin: "*",
+			//Configures the Access-Control-Allow-Methods CORS header.
+			methods: ["GET", "OPTIONS", "POST", "PUT", "DELETE"],
+			// Configures the Access-Control-Allow-Headers CORS header.
+			allowedHeaders: ["*"],
+			// Configures the Access-Control-Expose-Headers CORS header.
+			exposedHeaders: ["*"],
+			// Configures the Access-Control-Allow-Credentials CORS header.
+			credentials: false,
+			// Configures the Access-Control-Max-Age CORS header.
+			maxAge: 3600,
+		},
 		routes: [
 			{
 				path: "/api",
@@ -47,18 +61,6 @@ module.exports = {
 				autoAliases: true,
 
 				aliases: {},
-
-				onAfterCall(ctx, route, req, res, data) {
-					// Async function which return with Promise
-					var message = data.message ? data.message : "";
-					if (data["message"]) delete data["message"];
-					data = {
-						code: 200,
-						message: message,
-						data: data,
-					};
-					return ctx, route, req, res, data;
-				},
 
 				/**
          * Before call hook. You can check the request.
