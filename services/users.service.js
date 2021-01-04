@@ -75,7 +75,6 @@ module.exports = {
 			services: { type: "array", items: "string", optional: true },
 		},
 		populates: {
-		  /*
 			avatar: {
 				action: "files.find",
 			},
@@ -85,7 +84,6 @@ module.exports = {
 			user_type: {
 				action: "user-type.get",
 			},
-			*/
 		}
 
 	},
