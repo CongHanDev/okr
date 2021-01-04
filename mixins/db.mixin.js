@@ -49,7 +49,6 @@ module.exports = function(collection) {
 				let params = {
 					limit,
 					offset,
-					populate: populates,
 				};
 
 				if (name) params.search = name;

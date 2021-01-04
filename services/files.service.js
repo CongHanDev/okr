@@ -36,7 +36,7 @@ module.exports = {
 		 *
 		 */
 
-		getById: {
+		get: {
 			...routers.get,
 			async handler(ctx) {
 				return this.getEntityById(ctx, fileTransformer);
