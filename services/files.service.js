@@ -7,13 +7,10 @@ const fileTransformer = require("../transformers/file.transformer");
 
 module.exports = {
 	name: "files",
-	mixins: [
-		DbService("files"),
-		CacheCleanerMixin(["cache.clean.files"]),
-	],
+	mixins: [DbService("files"), CacheCleanerMixin(["cache.clean.files"])],
 	/**
-   * Default settings
-   */
+	 * Default settings
+	 */
 	settings: {
 		fields: [
 			"_id",
@@ -31,50 +28,50 @@ module.exports = {
 	},
 
 	/**
-   * Actions
-   */
+	 * Actions
+	 */
 	actions: {
 		/**
-     * Update
-     *
-     */
+		 * Update
+		 *
+		 */
 
 		getById: {
 			...routers.get,
-			async handler (ctx) {
+			async handler(ctx) {
 				return this.getEntityById(ctx, fileTransformer);
 			},
 		},
 
 		/**
-     * Update
-     *
-     */
+		 * Update
+		 *
+		 */
 		list: {
 			...routers.list,
-			async handler (ctx) {
+			async handler(ctx) {
 				return this.loadList(ctx, fileTransformer);
 			},
 		},
 		/**
-     * Update
-     *
-     */
+		 * Update
+		 *
+		 */
 		update: {
 			...routers.update,
 		},
 
 		/**
-     * Remove
-     *
-     */
+		 * Remove
+		 *
+		 */
 		remove: {
 			...routers.remove,
 		},
 	},
 
 	/**
-   * Methods
-   */
+	 * Methods
+	 */
 	methods: {},
 };

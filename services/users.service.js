@@ -20,8 +20,8 @@ module.exports = {
 	],
 
 	/**
-   * Default settings
-   */
+	 * Default settings
+	 */
 	settings: {
 		/** REST Basepath */
 		rest: "/user",
@@ -73,9 +73,13 @@ module.exports = {
 			status: { type: "string", optional: true },
 			deposit: { type: "number", optional: true },
 			services: { type: "array", items: "string", optional: true },
+			avatar: { type: "string", optional: true },
 		},
 		populates: {
-		  /*
+			avatar: {
+				action: "files.get",
+			},
+			/*
 			avatar: {
 				action: "files.find",
 			},
@@ -86,25 +90,24 @@ module.exports = {
 				action: "user-type.get",
 			},
 			*/
-		}
-
+		},
 	},
 
 	/**
-   * Actions
-   */
+	 * Actions
+	 */
 	actions: {
 		/**
-     * Register a new user
-     *
-     * @actions
-     * @param {Object} user - User entity
-     *
-     * @returns {Object} Created entity & token
-     */
+		 * Register a new user
+		 *
+		 * @actions
+		 * @param {Object} user - User entity
+		 *
+		 * @returns {Object} Created entity & token
+		 */
 		create: {
 			...routers.create,
-			async handler (ctx) {
+			async handler(ctx) {
 				let request = ctx.params;
 				const entity = await this.validateEntity(request);
 				/* Set OTP */
@@ -115,7 +118,9 @@ module.exports = {
 				/* Created at */
 				entity.created_at = new Date();
 				/* Status */
-				const status = await ctx.call("status.find", { query: { slug: "NOT_ACTIVATE", type: "USER" } });
+				const status = await ctx.call("status.find", {
+					query: { slug: "NOT_ACTIVATE", type: "USER" },
+				});
 				entity.status = status[0]._id;
 
 				let errors = {};
@@ -137,7 +142,10 @@ module.exports = {
 				}
 				/* Errors */
 				if (_.keys(errors).length) {
-					return responder.httpBadRequest(translate("validate"), errors);
+					return responder.httpBadRequest(
+						translate("validate"),
+						errors
+					);
 				}
 				/* Map to entity */
 				let newEntity = {};
@@ -160,66 +168,66 @@ module.exports = {
 		},
 
 		/**
-     * List of users.
-     *
-     * @actions
-     * @param {String} name - users
-     * @param {Number} limit - Pagination limit
-     * @param {Number} offset - Pagination offset
-     *
-     * @returns {Object} List of users
-     */
+		 * List of users.
+		 *
+		 * @actions
+		 * @param {String} name - users
+		 * @param {Number} limit - Pagination limit
+		 * @param {Number} offset - Pagination offset
+		 *
+		 * @returns {Object} List of users
+		 */
 		list: {
 			...routers.list,
 			cache: {
 				keys: ["#userID", "name", "limit", "offset"],
 			},
-			async handler (ctx) {
+			async handler(ctx) {
 				return this.loadList(ctx, userTransformer);
 			},
 		},
 
 		/**
-     * Find by id
-     *
-     * @param {String} id
-     */
+		 * Find by id
+		 *
+		 * @param {String} id
+		 */
 		get: {
 			...routers.get,
-			async handler (ctx) {
+			async handler(ctx) {
 				return this.getEntityById(ctx, userTransformer);
 			},
 		},
 
 		/**
-     * Update
-     *
-     */
+		 * Update
+		 *
+		 */
 		update: {
 			...routers.update,
 		},
 
 		/**
-     * Remove
-     *
-     */
+		 * Remove
+		 *
+		 */
 		remove: {
 			...routers.remove,
 		},
 
 		/**
-     * change-password with username & password
-     *
-     * @actions
-     * @param {Object} phone - phone credentials
-     *
-     * @returns {Object} oldPassword - Logged in user with token
-     *
-     * @returns {Object} newPassword - Logged in user with token
-     */
+		 * change-password with username & password
+		 *
+		 * @actions
+		 * @param {Object} phone - phone credentials
+		 *
+		 * @returns {Object} oldPassword - Logged in user with token
+		 *
+		 * @returns {Object} newPassword - Logged in user with token
+		 */
 		changePassword: {
 			...routers.passwordChange,
-			async handler (ctx) {
+			async handler(ctx) {
 				const { old_password, new_password } = ctx.params;
 				const user = await this.getById(ctx.meta.auth.id);
 				if (!user) {
@@ -232,7 +240,10 @@ module.exports = {
 				}
 				/* Errors */
 				if (_.keys(errors).length) {
-					return responder.httpBadRequest(translate("validate"), errors);
+					return responder.httpBadRequest(
+						translate("validate"),
+						errors
+					);
 				}
 				const update = {
 					$set: {
@@ -247,16 +258,16 @@ module.exports = {
 		},
 
 		/**
-     * Get current user entity.
-     * Auth is required!
-     *
-     * @actions
-     *
-     * @returns {String} User entity
-     */
+		 * Get current user entity.
+		 * Auth is required!
+		 *
+		 * @actions
+		 *
+		 * @returns {String} User entity
+		 */
 		verify: {
 			...routers.verify,
-			async handler (ctx) {
+			async handler(ctx) {
 				let request = ctx.params;
 				let errors = {};
 				const entity = await this.adapter.findById(request.id);
@@ -271,10 +282,15 @@ module.exports = {
 					errors.otp = translate("otp_validate");
 				}
 				if (_.keys(errors).length) {
-					return responder.httpBadRequest(translate("validate"), errors);
+					return responder.httpBadRequest(
+						translate("validate"),
+						errors
+					);
 				}
 				/* Status */
-				const status = await ctx.call("status.find", { query: { slug: "ACTIVATED", type: "USER" } });
+				const status = await ctx.call("status.find", {
+					query: { slug: "ACTIVATED", type: "USER" },
+				});
 				const update = {
 					$set: {
 						status: status[0]._id,
@@ -290,7 +306,7 @@ module.exports = {
 	},
 
 	/**
-   * Methods
-   */
+	 * Methods
+	 */
 	methods: {},
 };
