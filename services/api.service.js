@@ -28,9 +28,7 @@ module.exports = {
 			{
 				path: "/api",
 
-				whitelist: [
-					"**",
-				],
+				whitelist: ["**"],
 
 				// Route-level Express middlewares. More info: https://moleculer.services/docs/0.14/moleculer-web.html#Middlewares
 				use: [],
@@ -49,6 +47,18 @@ module.exports = {
 				autoAliases: true,
 
 				aliases: {},
+
+				onAfterCall(ctx, route, req, res, data) {
+					// Async function which return with Promise
+					var message = data.message ? data.message : "";
+					if (data["message"]) delete data["message"];
+					data = {
+						code: 200,
+						message: message,
+						data: data,
+					};
+					return ctx, route, req, res, data;
+				},
 
 				/**
          * Before call hook. You can check the request.
@@ -110,33 +120,34 @@ module.exports = {
 			options: {},
 		},
 
-		onError (req, res, err) {
+		onError(req, res, err) {
 			res.setHeader("Content-Type", "application/json");
 			res.writeHead(err.code || 500);
-			res.end(JSON.stringify({
-				status: err.code || 500,
-				success: false,
-				message: err.message,
-				errors: err.data,
-			}));
+			res.end(
+				JSON.stringify({
+					status: err.code || 500,
+					success: false,
+					message: err.message,
+					errors: err.data,
+				})
+			);
 		},
 	},
 
 	methods: {
-
 		/**
-     * Authenticate the request. It check the `Authorization` token value in the request header.
-     * Check the token value & resolve the user by the token.
-     * The resolved user will be available in `ctx.meta.user`
-     *
-     * PLEASE NOTE, IT'S JUST AN EXAMPLE IMPLEMENTATION. DO NOT USE IN PRODUCTION!
-     *
-     * @param {Context} ctx
-     * @param {Object} route
-     * @param {IncomingRequest} req
-     * @returns {Promise}
-     */
-		async authenticate (ctx, route, req) {
+		 * Authenticate the request. It check the `Authorization` token value in the request header.
+		 * Check the token value & resolve the user by the token.
+		 * The resolved user will be available in `ctx.meta.user`
+		 *
+		 * PLEASE NOTE, IT'S JUST AN EXAMPLE IMPLEMENTATION. DO NOT USE IN PRODUCTION!
+		 *
+		 * @param {Context} ctx
+		 * @param {Object} route
+		 * @param {IncomingRequest} req
+		 * @returns {Promise}
+		 */
+		async authenticate(ctx, route, req) {
 			// Read the token from header
 			const auth = req.headers["authorization"];
 			if (auth && auth.startsWith("Bearer")) {
@@ -147,7 +158,9 @@ module.exports = {
 					ctx.meta.auth = { id: userID };
 				} else {
 					// Invalid token
-					responder.httpUnauthorized(ApiGateway.Errors.ERR_INVALID_TOKEN);
+					responder.httpUnauthorized(
+						ApiGateway.Errors.ERR_INVALID_TOKEN
+					);
 				}
 			} else {
 				// No token. Throw an error or do nothing if anonymous access is allowed.
@@ -157,22 +170,24 @@ module.exports = {
 		},
 
 		/**
-     * Authorize the request. Check that the authenticated user has right to access the resource.
-     *
-     * PLEASE NOTE, IT'S JUST AN EXAMPLE IMPLEMENTATION. DO NOT USE IN PRODUCTION!
-     *
-     * @param {Context} ctx
-     * @param {Object} route
-     * @param {IncomingRequest} req
-     * @returns {Promise}
-     */
-		async authorize (ctx, route, req) {
+		 * Authorize the request. Check that the authenticated user has right to access the resource.
+		 *
+		 * PLEASE NOTE, IT'S JUST AN EXAMPLE IMPLEMENTATION. DO NOT USE IN PRODUCTION!
+		 *
+		 * @param {Context} ctx
+		 * @param {Object} route
+		 * @param {IncomingRequest} req
+		 * @returns {Promise}
+		 */
+		async authorize(ctx, route, req) {
 			// It check the `auth` property in action sc hema.
 			if (req.$action.auth && req.$action.auth === "required") {
 				// Get the authenticated user.
 				let user = null;
 				if (ctx.meta.auth) {
-					user = await ctx.call("users.find", { query: { _id: ctx.meta.auth.id || "" } });
+					user = await ctx.call("users.find", {
+						query: { _id: ctx.meta.auth.id || "" },
+					});
 					ctx.meta.user = user;
 				}
 				if (!user) {
@@ -180,6 +195,5 @@ module.exports = {
 				}
 			}
 		},
-
 	},
 };
