@@ -177,15 +177,15 @@ module.exports = {
 		 *
 		 * @returns {Object} List of users
 		 */
-		list: {
-			...routers.list,
-			cache: {
-				keys: ["#userID", "name", "limit", "offset"],
-			},
-			async handler(ctx) {
-				return this.loadList(ctx, userTransformer);
-			},
-		},
+		// list: {
+		// 	...routers.list,
+		// 	cache: {
+		// 		keys: ["#userID", "name", "limit", "offset"],
+		// 	},
+		// 	async handler(ctx) {
+		// 		return this.loadList(ctx, userTransformer);
+		// 	},
+		// },
 
 		/**
 		 * Find by id

@@ -36,12 +36,12 @@ module.exports = {
 		 *
 		 */
 
-		get: {
-			...routers.get,
-			async handler(ctx) {
-				return this.getEntityById(ctx, fileTransformer);
-			},
-		},
+		// get: {
+		// 	...routers.get,
+		// 	async handler(ctx) {
+		// 		return this.getEntityById(ctx, fileTransformer);
+		// 	},
+		// },
 
 		/**
 		 * Update
