@@ -11,17 +11,17 @@ module.exports = {
    * @param {Object} transformer
    */
 	httpOK (data = null, transformer = null, params = null) {
-		if (Array.isArray(data)) {
-			let result = data.map((record) => {
-				return nodeJsonTransformer.transform(record, transformer);
+		if (data.rows) {
+			let result = data.rows.map((record) => {
+				return transformer?nodeJsonTransformer.transform(record, transformer): record;
 			});
 
 			let paginate = {
-				count: Number(data.length),
-				total: Number(params.total),
-				limit: Number(params.limit),
-				offset: Number(params.currentpage),
-				total_pages: Math.ceil(Number(params.total) / Number(params.limit)),
+				count: data.rows.length,
+				total: data.total,
+				limit: data.pageSize,
+				offset: data.page,
+				total_pages: data.totalPages,
 			};
 
 			let dataResponse = {
@@ -29,7 +29,7 @@ module.exports = {
 				success: true,
 				data: result,
 			};
-			if (data.length) {
+			if (data.rows.length) {
 				dataResponse.pagination = paginate;
 			}
 			return dataResponse;
