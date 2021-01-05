@@ -1,25 +1,25 @@
-const REQUEST = require("../enums/request-type.enum");
+const REQUEST = require('../enums/request-type.enum')
 
 const routes = {
-	create: {
-		rest: `${ REQUEST.POST } `,
-	},
+  create: {
+    rest: `${ REQUEST.POST } `,
+  },
 
-	list: {
-		rest: `${ REQUEST.GET } `,
-	},
+  list: {
+    rest: `${ REQUEST.GET } `,
+  },
 
-	get: {
+  get: {
     rest: `${ REQUEST.GET } /:id`,
-	},
+  },
 
-	update: {
+  update: {
     rest: `${ REQUEST.PUT } /:id`,
-	},
+  },
 
-	remove: {
+  remove: {
     rest: `${ REQUEST.DELETE } /:id`,
-	},
-};
+  },
+}
 
-module.exports = routes;
+module.exports = routes
