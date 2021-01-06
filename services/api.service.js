@@ -60,7 +60,26 @@ module.exports = {
 				// The gateway will dynamically build the full routes from service schema.
 				autoAliases: true,
 
-				aliases: {},
+				aliases: {
+					"POST files/upload/single": {
+						type: "multipart",
+						busboyConfig: {
+							limits: {
+								files: 1,
+							},
+						},
+						action: "files.uploadSingle",
+					},
+					"POST files/upload/avatar": {
+						type: "multipart",
+						busboyConfig: {
+							limits: {
+								files: 1,
+							},
+						},
+						action: "files.uploadAvatar",
+					},
+				},
 
 				/**
 				 * Before call hook. You can check the request.
@@ -101,7 +120,7 @@ module.exports = {
 				},
 
 				// Mapping policy setting. More info: https://moleculer.services/docs/0.14/moleculer-web.html#Mapping-policy
-				mappingPolicy: "all", // Available values: "all", "restrict"
+				mappingPolicy: "restrict", // Available values: "all", "restrict"
 
 				// Enable/disable logging
 				logging: true,
