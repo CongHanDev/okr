@@ -4,7 +4,7 @@ const DbService = require("../mixins/db.mixin");
 const CacheCleanerMixin = require("../mixins/cache.cleaner.mixin");
 const schemas = {
 	name: "user-types",
-	mixins: [DbService("user-types"), CacheCleanerMixin(["cache.clean.user-types"])],
+	mixins: [DbService("user_types"), CacheCleanerMixin(["cache.clean.user_types"])],
 	settings: {
 		fields: [
 			"_id",
