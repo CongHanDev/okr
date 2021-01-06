@@ -6,8 +6,9 @@ const routes = {
 	login: {
 		rest: `${ REQUEST.POST } /login`,
 	},
+	
 	me: {
-		rest: "/me",
+		rest: "GET /me",
 		auth: "required",
 	},
 };
