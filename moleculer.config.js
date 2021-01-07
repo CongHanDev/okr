@@ -1,5 +1,5 @@
 "use strict";
-
+require("dotenv").config();
 /**
  * Moleculer ServiceBroker configuration file
  *
@@ -25,6 +25,7 @@
  *    }
  *  }
  */
+
 module.exports = {
 	// Namespace of nodes to segment your nodes on the same network.
 	namespace: "",
