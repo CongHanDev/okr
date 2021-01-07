@@ -1,0 +1,144 @@
+version: "3.3"
+
+services:
+
+  api:
+    build:
+      context: .
+    image: okr-business
+    env_file: docker-compose.env
+    environment:
+      SERVICES: api
+      PORT: 3000
+    depends_on:
+      - stan
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api-gw.rule=PathPrefix(`/`)"
+      - "traefik.http.services.api-gw.loadbalancer.server.port=3000"
+    networks:
+      - internal
+
+  auth:
+    build:
+      context: .
+    image: okr-business
+    env_file: docker-compose.env
+    environment:
+      SERVICES: auth
+    depends_on:
+      - mongo
+      - stan
+    networks:
+      - internal
+
+  users:
+    build:
+      context: .
+    image: okr-business
+    env_file: docker-compose.env
+    environment:
+      SERVICES: users
+    depends_on:
+      - mongo
+      - stan
+    networks:
+      - internal
+
+  status:
+    build:
+      context: .
+    image: okr-business
+    env_file: docker-compose.env
+    environment:
+      SERVICES: status
+    depends_on:
+      - mongo
+      - stan
+    networks:
+      - internal
+
+  user_type:
+    build:
+      context: .
+    image: okr-business
+    env_file: docker-compose.env
+    environment:
+      SERVICES: user_type
+    depends_on:
+      - mongo
+      - stan
+    networks:
+      - internal
+
+  services:
+    build:
+      context: .
+    image: okr-business
+    env_file: docker-compose.env
+    environment:
+      SERVICES: services
+    depends_on:
+      - mongo
+      - stan
+    networks:
+      - internal
+
+  files:
+    build:
+      context: .
+    image: okr-business
+    env_file: docker-compose.env
+    environment:
+      SERVICES: files
+    depends_on:
+      - mongo
+      - stan
+    networks:
+      - internal
+
+  expertises:
+    build:
+      context: .
+    image: okr-business
+    env_file: docker-compose.env
+    environment:
+      SERVICES: expertises
+    depends_on:
+      - mongo
+      - stan
+    networks:
+      - internal
+
+  mongo:
+    image: mongo:4
+    volumes:
+      - data:/data/db
+    networks:
+      - internal
+
+  stan:
+    image: nats-streaming
+    networks:
+      - internal
+
+  traefik:
+    image: traefik:v2.1
+    command:
+      - "--api.insecure=true" # Don't do that in production!
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+    ports:
+      - 3000:80
+      - 3001:8080
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - internal
+      - default
+
+networks:
+  internal:
+
+volumes:
+  data:
