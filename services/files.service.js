@@ -55,8 +55,10 @@ module.exports = {
 
 		uploadAvatar: {
 			auth: "required",
-			handler (ctx) {
-				return this.save("avatar", ctx);
+			async handler (ctx) {
+				const file = await this.save("avatar", ctx);
+				await ctx.call("users.update", { id: ctx.meta.auth.id, avatar_id: {...file}._id });
+				return file;
 			},
 		},
 	},
@@ -65,9 +67,9 @@ module.exports = {
 	 * Methods
 	 */
 	methods: {
-		save (model, ctx) {
+		async save (model, ctx) {
 			return new this.Promise((resolve, reject) => {
-				const currentPath = `/assets/${ model }`
+				const currentPath = `/assets/${ model }`;
 				const uploadDir = path.join(__dirname, `../public${ currentPath }`);
 				mkdir(uploadDir);
 				const extension = ctx.meta.filename.split(".").pop();
@@ -80,7 +82,7 @@ module.exports = {
 					name: fileName,
 					upload_name: ctx.meta.filename,
 					mime_type: ctx.meta.mimetype,
-					path: path.join(currentPath,fileName) ,
+					path: path.join(currentPath, fileName),
 					model: model,
 					created_by: ctx.meta.auth.id,
 					created_at: new Date(),

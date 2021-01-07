@@ -1,7 +1,7 @@
 "use strict";
 
-const routers = require("../routes/expertise.route");
-const schema = require("../schemas/expertise.schema");
+const routers = require("../routes/level.route");
+const schema = require("../schemas/level.schema");
 
 module.exports = {
 	...schema,
