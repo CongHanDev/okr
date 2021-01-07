@@ -51,8 +51,8 @@ const schemas = {
 			attach_id: { type: "array", items: "string", optional: true },
 			otp: { type: "string", optional: true },
 			deposit: { type: "number", optional: true },
-			servicesId: { type: "array", items: "string", optional: true },
-			status: { type: "number", optional: true, default: 1 },
+			services_id: { type: "array", items: "string", optional: true },
+			status: { type: "string", optional: true},
 		},
 		populates: {
 			avatar_id: {
