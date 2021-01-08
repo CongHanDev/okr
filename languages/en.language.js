@@ -9,7 +9,8 @@ module.exports = {
 	password_required: "Password can not empty.",
 	otp_required: "OTP can not empty.",
 	otp_validate: "OTP invalidate.",
-	validate: "Validation",
-	old_password_not_mach: "Old password not match",
-	send_email_error: "Can't send email",
+	validate: "Validation.",
+	old_password_not_mach: "Old password not match.",
+	send_email_error: "Can't send email.",
+	account_not_active: "The account is not activated.",
 };

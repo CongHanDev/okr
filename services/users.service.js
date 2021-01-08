@@ -31,7 +31,7 @@ module.exports = {
 				let request = ctx.params;
 				const entity = await this.validateEntity(request);
 				/* Set OTP */
-				const otp = cryptoRandomString({ length: 6 }).toUpperCase();
+				const otp = cryptoRandomString({ length: 6, type: "numeric" }).toUpperCase();
 				entity.otp = otp;
 				/* Set ID */
 				entity._id = uuid.v4();
