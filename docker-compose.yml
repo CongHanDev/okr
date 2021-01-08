@@ -135,6 +135,7 @@ services:
       - stan
     networks:
       - internal
+
   service-form:
     build:
       context: .
@@ -193,7 +194,7 @@ services:
     image: okr-business
     env_file: docker-compose.env
     environment:
-      SERVICES: service-type
+      SERVICES: status
     depends_on:
       - mongo
       - stan
