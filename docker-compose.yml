@@ -1,0 +1,287 @@
+version: "3.3"
+
+services:
+
+  api:
+    build:
+      context: .
+    image: okr-business
+    env_file: docker-compose.env
+    environment:
+      SERVICES: api
+      PORT: 3000
+    depends_on:
+      - stan
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api-gw.rule=PathPrefix(`/`)"
+      - "traefik.http.services.api-gw.loadbalancer.server.port=3000"
+    networks:
+      - internal
+
+  auth:
+    build:
+      context: .
+    image: okr-business
+    env_file: docker-compose.env
+    environment:
+      SERVICES: auth
+    depends_on:
+      - mongo
+      - stan
+    networks:
+      - internal
+
+  city:
+    build:
+      context: .
+    image: okr-business
+    env_file: docker-compose.env
+    environment:
+      SERVICES: city
+    depends_on:
+      - mongo
+      - stan
+    networks:
+      - internal
+
+  expertise:
+    build:
+      context: .
+    image: okr-business
+    env_file: docker-compose.env
+    environment:
+      SERVICES: expertise
+    depends_on:
+      - mongo
+      - stan
+    networks:
+      - internal
+
+  file:
+    build:
+      context: .
+    image: okr-business
+    env_file: docker-compose.env
+    environment:
+      SERVICES: file
+    depends_on:
+      - mongo
+      - stan
+    networks:
+      - internal
+
+  level:
+    build:
+      context: .
+    image: okr-business
+    env_file: docker-compose.env
+    environment:
+      SERVICES: level
+    depends_on:
+      - mongo
+      - stan
+    networks:
+      - internal
+
+  permission:
+    build:
+      context: .
+    image: okr-business
+    env_file: docker-compose.env
+    environment:
+      SERVICES: permission
+    depends_on:
+      - mongo
+      - stan
+    networks:
+      - internal
+
+  permission-role:
+    build:
+      context: .
+    image: okr-business
+    env_file: docker-compose.env
+    environment:
+      SERVICES: permission-role
+    depends_on:
+      - mongo
+      - stan
+    networks:
+      - internal
+
+  role:
+    build:
+      context: .
+    image: okr-business
+    env_file: docker-compose.env
+    environment:
+      SERVICES: role
+    depends_on:
+      - mongo
+      - stan
+    networks:
+      - internal
+
+  service:
+    build:
+      context: .
+    image: okr-business
+    env_file: docker-compose.env
+    environment:
+      SERVICES: service
+    depends_on:
+      - mongo
+      - stan
+    networks:
+      - internal
+
+  service-price:
+    build:
+      context: .
+    image: okr-business
+    env_file: docker-compose.env
+    environment:
+      SERVICES: service-price
+    depends_on:
+      - mongo
+      - stan
+    networks:
+      - internal
+
+  service-price-type:
+    build:
+      context: .
+    image: okr-business
+    env_file: docker-compose.env
+    environment:
+      SERVICES: service-price-type
+    depends_on:
+      - mongo
+      - stan
+    networks:
+      - internal
+
+  service-type:
+    build:
+      context: .
+    image: okr-business
+    env_file: docker-compose.env
+    environment:
+      SERVICES: service-type
+    depends_on:
+      - mongo
+      - stan
+    networks:
+      - internal
+
+  status:
+    build:
+      context: .
+    image: okr-business
+    env_file: docker-compose.env
+    environment:
+      SERVICES: service-type
+    depends_on:
+      - mongo
+      - stan
+    networks:
+      - internal
+
+  unit:
+    build:
+      context: .
+    image: okr-business
+    env_file: docker-compose.env
+    environment:
+      SERVICES: unit
+    depends_on:
+      - mongo
+      - stan
+    networks:
+      - internal
+
+  user:
+    build:
+      context: .
+    image: okr-business
+    env_file: docker-compose.env
+    environment:
+      SERVICES: user
+    depends_on:
+      - mongo
+      - stan
+    networks:
+      - internal
+
+  user-role:
+    build:
+      context: .
+    image: okr-business
+    env_file: docker-compose.env
+    environment:
+      SERVICES: user-role
+    depends_on:
+      - mongo
+      - stan
+    networks:
+      - internal
+
+  user-type:
+    build:
+      context: .
+    image: okr-business
+    env_file: docker-compose.env
+    environment:
+      SERVICES: user-type
+    depends_on:
+      - mongo
+      - stan
+    networks:
+      - internal
+
+  work-formality:
+    build:
+      context: .
+    image: okr-business
+    env_file: docker-compose.env
+    environment:
+      SERVICES: work-formality
+    depends_on:
+      - mongo
+      - stan
+    networks:
+      - internal
+
+  mongo:
+    image: mongo:4
+    volumes:
+      - data:/data/db
+    networks:
+      - internal
+
+  stan:
+    image: nats-streaming
+    networks:
+      - internal
+
+  traefik:
+    image: traefik:v2.1
+    command:
+      - "--api.insecure=true" # Don't do that in production!
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+    ports:
+      - 3000:80
+      - 3001:8080
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - internal
+      - default
+
+networks:
+  internal:
+
+volumes:
+  data:
