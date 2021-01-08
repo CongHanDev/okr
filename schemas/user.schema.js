@@ -23,7 +23,7 @@ const schemas = {
 			"introduce",
 			"website",
 			"expertise_ids",
-			"levelId",
+			"level_id",
 			"attach_ids",
 			"status",
 			"deposit",
@@ -46,13 +46,13 @@ const schemas = {
 			address: { type: "string", optional: true },
 			introduce: { type: "string", optional: true },
 			website: { type: "string", optional: true },
-			expertise_id: { type: "array", items: "string", optional: true },
+			expertise_ids: { type: "array", items: "string", optional: true },
 			level_id: { type: "string", optional: true },
-			attach_id: { type: "array", items: "string", optional: true },
+			attach_ids: { type: "array", items: "string", optional: true },
 			otp: { type: "string", optional: true },
 			deposit: { type: "number", optional: true },
-			services_id: { type: "array", items: "string", optional: true },
-			status: { type: "string", optional: true},
+			service_ids: { type: "array", items: "string", optional: true },
+			status: { type: "string", optional: true },
 		},
 		populates: {
 			avatar_id: {
@@ -61,24 +61,27 @@ const schemas = {
 			user_type: {
 				action: "user-type.get",
 			},
-			cityId: {
+			city_id: {
 				action: "cities.get",
 			},
-			levelId: {
+			level_id: {
 				action: "levels.get",
 			},
-			expertisesId: {
+			expertise_ids: {
 				action: "levels.get",
 			},
-			attachesId: {
+			attaches_id: {
 				action: "files.get",
 			},
-			servicesId: {
+			services_id: {
 				action: "services.get",
+			},
+			status: {
+				action: "status.get",
 			},
 		},
 		indexes: { "$**": "text" },
-	}
+	},
 };
 
 module.exports = schemas;
