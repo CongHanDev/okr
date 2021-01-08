@@ -1,4 +1,6 @@
 FROM node:current-alpine
+LABEL Maintainer="OKR" \
+      Description="docker"
 
 ENV NODE_ENV=production
 
