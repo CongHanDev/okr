@@ -55,7 +55,7 @@ const actions = {
 			keys: ["#userID"],
 		},
 		async handler (ctx) {
-			const user = await ctx.call("users.get", { id: ctx.meta.auth.id });
+			const user = await ctx.call("users.get", { id: ctx.meta.auth.id, populate: ["avatar_id", "banner_id", "city_id", "expertise_ids", "level_id", "attach_ids", "service_ids", "status"] });
 			if (!user) {
 				return responder.httpBadRequest(translate("unauthorized"), { user_name: translate("user_name_invalid") });
 			}
