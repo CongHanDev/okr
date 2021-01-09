@@ -3,7 +3,7 @@
 const fs = require("fs");
 const _ = require("lodash");
 const DbService = require("moleculer-db");
-const responder = require("../mixins");
+const responder = require("../mixins/response.mixin");
 
 /**
  * @typedef {import('moleculer').Context} Context Moleculer's Context
