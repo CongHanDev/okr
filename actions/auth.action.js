@@ -58,13 +58,14 @@ const actions = {
 				populate: [
 					"avatar",
 					"banner",
+					"user_type",
 					"city",
 					"expertises",
 					"level",
 					"attaches",
 					"services",
-					"status"
-        ],
+					"status",
+				],
 			});
 			if (!user) {
 				return responder.httpBadRequest(translate("unauthorized"), { user_name: translate("user_name_invalid") });
