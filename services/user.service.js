@@ -225,7 +225,7 @@ module.exports = {
 					email: emails[i],
 					password: bcrypt.hashSync(pass, 10),
 					phone: phones[i],
-					city_id: "1d84fccc-bdfe-49ee-ae20-c3f13d503a70-1",
+					city: "1d84fccc-bdfe-49ee-ae20-c3f13d503a70-1",
 					user_type: "83ece746-bdb2-42c7-8df8-0eb5325a08af-1",
 					expertises: ["ccce1f35-cc78-404c-80f8-3d682f293abe-1", "ccce1f35-cc78-404c-80f8-3d682f293abe-2"],
 					level: "7d1ae12d-74cc-4ff7-9651-5296c29c7f43-1",

@@ -15,7 +15,7 @@ const schemas = {
 			"last_name",
 			"password",
 			"phone",
-			"city_id",
+			"city",
 			"identity_card",
 			"birthday",
 			"address",
