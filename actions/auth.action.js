@@ -56,14 +56,15 @@ const actions = {
 			const user = await ctx.call("user.get", {
 				id: ctx.meta.auth.id,
 				populate: [
-					"avatar_id",
-					"banner_id",
-					"city_id",
-					"expertise_ids",
-					"level_id",
-					"attach_ids",
-					"service_ids",
-					"status"],
+					"avatar",
+					"banner",
+					"city",
+					"expertises",
+					"level",
+					"attaches",
+					"services",
+					"status"
+        ],
 			});
 			if (!user) {
 				return responder.httpBadRequest(translate("unauthorized"), { user_name: translate("user_name_invalid") });
