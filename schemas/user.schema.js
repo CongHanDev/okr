@@ -20,6 +20,7 @@ const schemas = {
 			"birthday",
 			"address",
 			"user_type",
+			"title",
 			"introduce",
 			"website",
 			"expertises",
@@ -29,6 +30,7 @@ const schemas = {
 			"deposit",
 			"services",
 			"otp",
+			"form",
 		],
 
 		/** Validator schema for entity */
@@ -42,7 +44,9 @@ const schemas = {
 			city: { type: "string", optional: true },
 			identity_card: { type: "string", optional: true },
 			birthday: { type: "date", optional: true },
+			user_type: { type: "string", optional: true },
 			address: { type: "string", optional: true },
+			title: { type: "string", optional: true },
 			introduce: { type: "string", optional: true },
 			website: { type: "string", optional: true },
 			expertises: { type: "array", items: "string", optional: true },

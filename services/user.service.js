@@ -219,7 +219,7 @@ module.exports = {
 			let data = [];
 			for (let i = 0; i < emails.length; i++) {
 				data.push({
-					_id: uuid.v4(),
+					_id: `c6cdce48-0574-45f6-ad13-05f24d1b7471-${i}`,
 					avatar: "0de2b567-edb5-4f54-ba18-6d69653ed7ea",
 					banner: "0de2b567-edb5-4f54-ba18-6d69653ed7ea",
 					email: emails[i],
