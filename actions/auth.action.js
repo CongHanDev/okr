@@ -65,7 +65,6 @@ const actions = {
 					"attaches",
 					"services",
 					"status",
-					"form",
 				],
 			});
 			if (!user) {
