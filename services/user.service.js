@@ -18,6 +18,37 @@ module.exports = {
    */
 	actions: {
 		/**
+     * Get
+     *
+     */
+
+		get: {
+			...routers.get,
+		},
+
+		/**
+     * List
+     *
+     */
+		list: {
+			...routers.list,
+		},
+		/**
+     * Update
+     *
+     */
+		update: {
+			...routers.update,
+		},
+
+		/**
+     * Remove
+     *
+     */
+		remove: {
+			...routers.remove,
+		},
+		/**
      * Register a new user
      *
      * @actions

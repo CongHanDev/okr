@@ -10,6 +10,14 @@ module.exports = {
    */
 	actions: {
 		/**
+     * Create
+     *
+     */
+		create: {
+			...routers.create,
+		},
+
+		/**
      * Get
      *
      */

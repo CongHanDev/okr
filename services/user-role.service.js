@@ -10,7 +10,8 @@ module.exports = {
    * Actions
    */
 	actions: {
-		/**
+
+	  /**
      * Get
      *
      */
