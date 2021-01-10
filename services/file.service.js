@@ -11,91 +11,97 @@ module.exports = {
 	...schema,
 
 	/**
-   * Actions
-   */
+	 * Actions
+	 */
 	actions: {
 		/**
-     * Create
-     *
-     */
+		 * Create
+		 *
+		 */
 		create: {
 			...routers.create,
 		},
 
 		/**
-     * Get
-     *
-     */
+		 * Get
+		 *
+		 */
 
 		get: {
 			...routers.get,
 		},
 
 		/**
-     * List
-     *
-     */
+		 * List
+		 *
+		 */
 		list: {
 			...routers.list,
 		},
 		/**
-     * Update
-     *
-     */
+		 * Update
+		 *
+		 */
 		update: {
 			...routers.update,
 		},
 
 		/**
-     * Remove
-     *
-     */
+		 * Remove
+		 *
+		 */
 		remove: {
 			...routers.remove,
 		},
 
 		uploadSingle: {
 			auth: "required",
-			handler (ctx) {
+			handler(ctx) {
 				return this.save("images", ctx);
 			},
 		},
 
 		uploadAvatar: {
 			auth: "required",
-			async handler (ctx) {
+			async handler(ctx) {
 				const file = await this.save("avatar", ctx);
-				await ctx.call("user.update", { id: ctx.meta.auth.id, avatar_id: { ...file }._id });
+				await ctx.call("user.update", {
+					id: ctx.meta.auth.id,
+					avatar_id: { ...file }._id,
+				});
 				return file;
 			},
 		},
 	},
 
 	/**
-   * Methods
-   */
+	 * Methods
+	 */
 	methods: {
-		async seedDB () {
-			const data =
-        {
-        	_id: "0de2b567-edb5-4f54-ba18-6d69653ed7ea",
-        	name: "0de2b567-edb5-4f54-ba18-6d69653ed7ea.png",
-        	upload_name: "seeder.png",
-        	mime_type: "image/png",
-        	path: "/assets/avatar/0de2b567-edb5-4f54-ba18-6d69653ed7ea.png",
-        	model: "avatar",
-        	created_at: new Date(),
-        };
-			await this.adapter.insertMany([data]);
-		},
-		async save (model, ctx) {
+		// async seedDB () {
+		// 	const data =
+		// {
+		// 	_id: "0de2b567-edb5-4f54-ba18-6d69653ed7ea",
+		// 	name: "0de2b567-edb5-4f54-ba18-6d69653ed7ea.png",
+		// 	upload_name: "seeder.png",
+		// 	mime_type: "image/png",
+		// 	path: "/assets/avatar/0de2b567-edb5-4f54-ba18-6d69653ed7ea.png",
+		// 	model: "avatar",
+		// 	created_at: new Date(),
+		// };
+		// 	await this.adapter.insertMany([data]);
+		// },
+		async save(model, ctx) {
 			return new this.Promise((resolve, reject) => {
-				const currentPath = `/assets/${ model }`;
-				const uploadDir = path.join(__dirname, `../public${ currentPath }`);
+				const currentPath = `/assets/${model}`;
+				const uploadDir = path.join(
+					__dirname,
+					`../public${currentPath}`
+				);
 				mkdir(uploadDir);
 				const extension = ctx.meta.filename.split(".").pop();
 				const id = uuid.v4();
-				let fileName = `${ id }.${ extension }`;
+				let fileName = `${id}.${extension}`;
 				const filePath = path.join(uploadDir, fileName);
 
 				const fileData = {
