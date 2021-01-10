@@ -21,6 +21,9 @@ const schemas = {
 			service_type: {
 				action: "service-type.get",
 			},
+			image: {
+				action: "file.get",
+			},
 		},
 		entityValidator: {
 			name: { type: "string" },
