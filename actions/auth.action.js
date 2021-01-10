@@ -17,21 +17,29 @@ const actions = {
 			user_name: { type: "string", min: 6 },
 			password: { type: "string", min: 6 },
 		},
-		async handler (ctx) {
+		async handler(ctx) {
 			const { user_name, password } = ctx.params;
-			const users = await ctx.call("user.find",
-				{ populate: ["status"], query: { $or: [{ email: user_name }, { phone: user_name }] } });
+			const users = await ctx.call("user.find", {
+				populate: ["status"],
+				query: { $or: [{ email: user_name }, { phone: user_name }] },
+			});
 			if (!users.length) {
-				return responder.httpBadRequest(translate("unauthorized"), { user_name: translate("user_name_invalid") });
+				return responder.httpBadRequest(translate("unauthorized"), {
+					user_name: translate("user_name_invalid"),
+				});
 			}
 			const user = { ...users[0] };
 			const res = await bcrypt.compare(password, user.password);
 			if (!res) {
-				return responder.httpBadRequest(translate("unauthorized"), { password: translate("password_invalid") });
+				return responder.httpBadRequest(translate("unauthorized"), {
+					password: translate("password_invalid"),
+				});
 			}
 			if (user.status.slug === "NOT_ACTIVATE") {
-				return responder.httpBadRequest(translate("account_not_active"),
-					{ user_name: translate("account_not_active") });
+				return responder.httpBadRequest(
+					translate("account_not_active"),
+					{ user_name: translate("account_not_active") }
+				);
 			}
 
 			return generateToken(user);
@@ -39,46 +47,50 @@ const actions = {
 	},
 
 	/**
-   * Get current user entity.
-   * Auth is required!
-   *
-   * @actions
-   *
-   * @returns {Object} User entity
-   */
+	 * Get current user entity.
+	 * Auth is required!
+	 *
+	 * @actions
+	 *
+	 * @returns {Object} User entity
+	 */
 
 	me: {
 		...routers.me,
 		cache: {
 			keys: ["#userID"],
 		},
-		async handler (ctx) {
-			const user = await ctx.call("user.get", {
+		async handler(ctx) {
+			const user = await ctx.broker.call("user.get", {
 				id: ctx.meta.auth.id,
 				populate: [
-					"avatar_id",
-					"banner_id",
-					"city_id",
-					"expertise_ids",
-					"level_id",
-					"attach_ids",
-					"service_ids",
-					"status"],
+					"avatar",
+					"banner",
+					"city",
+					"expertises",
+					"level",
+					"attaches",
+					"services",
+					"user_type",
+					"status",
+				],
 			});
 			if (!user) {
-				return responder.httpBadRequest(translate("unauthorized"), { user_name: translate("user_name_invalid") });
+				return responder.httpBadRequest(translate("unauthorized"), {
+					user_name: translate("user_name_invalid"),
+				});
 			}
 			return user;
 		},
 	},
 	/**
-   * Get user by JWT token (for API GW authentication)
-   *
-   * @actions
-   * @param {String} token - JWT token
-   *
-   * @returns {Object} Resolved user
-   */
+	 * Get user by JWT token (for API GW authentication)
+	 *
+	 * @actions
+	 * @param {String} token - JWT token
+	 *
+	 * @returns {Object} Resolved user
+	 */
 	resolveToken: {
 		cache: {
 			keys: ["token"],
@@ -87,7 +99,7 @@ const actions = {
 		params: {
 			token: "string",
 		},
-		async handler (ctx) {
+		async handler(ctx) {
 			const decoded = await new this.Promise((resolve, reject) => {
 				jwt.verify(
 					ctx.params.token,
@@ -96,7 +108,7 @@ const actions = {
 						if (err) return reject(err);
 
 						resolve(decoded);
-					},
+					}
 				);
 			});
 
@@ -122,7 +134,7 @@ const generateToken = (user) => {
 			phone: user.phone,
 			exp: expiredTime,
 		},
-		process.env.JWT_SECRET,
+		process.env.JWT_SECRET
 	);
 
 	return {

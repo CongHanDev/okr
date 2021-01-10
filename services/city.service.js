@@ -7,66 +7,66 @@ module.exports = {
 	...schema,
 
 	/**
-   * Actions
-   */
+	 * Actions
+	 */
 	actions: {
 		/**
-     * Create
-     *
-     */
+		 * Create
+		 *
+		 */
 		create: {
 			...routers.create,
 		},
 
 		/**
-     * Get
-     *
-     */
+		 * Get
+		 *
+		 */
 
 		get: {
 			...routers.get,
 		},
 
 		/**
-     * List
-     *
-     */
+		 * List
+		 *
+		 */
 		list: {
 			...routers.list,
 		},
 		/**
-     * Update
-     *
-     */
+		 * Update
+		 *
+		 */
 		update: {
 			...routers.update,
 		},
 
 		/**
-     * Remove
-     *
-     */
+		 * Remove
+		 *
+		 */
 		remove: {
 			...routers.remove,
 		},
 	},
 
 	/**
-   * Methods
-   */
+	 * Methods
+	 */
 	methods: {
-		async seedDB () {
-			let data = [];
-			for (let i = 1; i <= 100; i++) {
-				data.push(
-					{
-						_id: `1d84fccc-bdfe-49ee-ae20-c3f13d503a70-${ i }`,
-						name: "City " + i,
-						description: "",
-						created_at: new Date(),
-					});
-			}
-			await this.adapter.insertMany(data);
-		},
+		// async seedDB () {
+		// 	let data = [];
+		// 	for (let i = 1; i <= 100; i++) {
+		// 		data.push(
+		// 			{
+		// 				_id: `1d84fccc-bdfe-49ee-ae20-c3f13d503a70-${ i }`,
+		// 				name: "City " + i,
+		// 				description: "",
+		// 				created_at: new Date(),
+		// 			});
+		// 	}
+		// 	await this.adapter.insertMany(data);
+		// },
 	},
 };
