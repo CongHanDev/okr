@@ -12,7 +12,6 @@ const routes = {
 
 	list: {
 		rest: `${ REQUEST.GET } `,
-		// auth: "required",
 		params: {
 			limit: { type: "number", optional: true, convert: true },
 			offset: { type: "number", optional: true, convert: true },
@@ -22,19 +21,6 @@ const routes = {
 	get: {
 		auth: "required",
 		rest: `${ REQUEST.GET } /:id`,
-	},
-
-	verify: {
-		rest: `${ REQUEST.PUT } /verify`,
-		params: {
-			id: {
-				type: "string",
-			},
-			otp: {
-				type: "string",
-				pattern: /^[a-zA-Z0-9]+$/,
-			},
-		},
 	},
 
 	passwordChange: {

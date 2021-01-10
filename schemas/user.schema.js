@@ -85,9 +85,7 @@ const schemas = {
 
 		fieldsNotUpdate: [
 			"email",
-			"password",
 			"phone",
-			"otp",
 		],
 	},
 };

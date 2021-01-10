@@ -8,9 +8,10 @@ module.exports = {
 	email_exists: "Email has been exists.",
 	password_required: "Password can not empty.",
 	otp_required: "OTP can not empty.",
-	otp_validate: "OTP invalidate.",
+	otp_valid: "OTP invalid.",
 	validate: "Validation.",
 	old_password_not_mach: "Old password not match.",
 	send_email_error: "Can't send email.",
 	account_not_active: "The account is not activated.",
+	password_reset: "Reset password.",
 };

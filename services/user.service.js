@@ -40,13 +40,12 @@ module.exports = {
 		update: {
 			...routers.update,
 			async handler (ctx) {
-				let request = await this.validateEntity(ctx.params);
-
+				let request = ctx.params;
 				const updateEntity = {
 					$set: this.mapEntity(request, true),
 				};
 
-				const doc = await this.adapter.updateById(ctx.params.id, updateEntity);
+				const doc = await this.adapter.updateById(request.id, updateEntity);
 				const user = await this.transformDocuments(ctx, {}, doc);
 				await this.entityChanged("updated", user, ctx);
 				return user;
@@ -72,7 +71,19 @@ module.exports = {
 			...routers.create,
 			async handler (ctx) {
 				let request = ctx.params;
-				const entity = await this.validateEntity(request);
+				const isSocial = request.access_token || false;
+				if (isSocial) {
+					const dbUser = await this.adapter.find({ query: { email: request.email } });
+					const current = _.first(dbUser);
+					if (!current) {
+						/* Map to entity */
+						let newEntity = this.mapEntity(request);
+						const doc = await this.adapter.insert(newEntity);
+						await this.entityChanged("created", doc, ctx);
+					}
+					return current;
+				}
+				const entity = isSocial ? request : await this.validateEntity(request);
 				/* Set OTP */
 				const otp = cryptoRandomString({ length: 6, type: "numeric" }).toUpperCase();
 				entity.otp = otp;
@@ -84,7 +95,7 @@ module.exports = {
 				const status = await ctx.call("status.find", {
 					query: { slug: "NOT_ACTIVATE", type: "USER" },
 				});
-				entity.status = status[0]._id;
+				entity.status = _.first(status)._id;
 
 				let errors = {};
 				/* Validate password */
@@ -111,13 +122,11 @@ module.exports = {
 					);
 				}
 				/* Map to entity */
-				let newEntity = {};
-				_.values(this.settings.fields).forEach((key) => {
-					newEntity[key] = entity[key] || null;
-				});
+				let newEntity = this.mapEntity(entity);
 
 				/* Send OTP */
-				const isSend = await email.sendOTP(newEntity);
+				let isSend = await email.sendOTP(newEntity);
+
 				/* Response */
 				if (isSend) {
 					/* Insert to database */
@@ -169,53 +178,6 @@ module.exports = {
 				const doc = await this.adapter.updateById(user._id, update);
 				await this.entityChanged("updated", doc, ctx);
 				return user;
-			},
-		},
-
-		/**
-     * Get current user entity.
-     * Auth is required!
-     *
-     * @actions
-     *
-     * @returns {String} User entity
-     */
-		verify: {
-			...routers.verify,
-			async handler (ctx) {
-				let request = ctx.params;
-				let errors = {};
-				const entity = await this.adapter.findById(request.id);
-				if (!entity) {
-					return responder.httpNotFound();
-				}
-				/* Validate otp */
-				if (!_.has(request, "otp")) {
-					errors.otp = translate("otp_required");
-				}
-				if (entity.otp !== request.otp) {
-					errors.otp = translate("otp_validate");
-				}
-				if (_.keys(errors).length) {
-					return responder.httpBadRequest(
-						translate("validate"),
-						errors,
-					);
-				}
-				/* Status */
-				const status = await ctx.call("status.find", {
-					query: { slug: "ACTIVATED", type: "USER" },
-				});
-				const update = {
-					$set: {
-						status: status[0]._id,
-						updated_at: new Date(),
-					},
-				};
-				/* Update database */
-				const doc = await this.adapter.updateById(entity._id, update);
-				await this.entityChanged("updated", doc, ctx);
-				return doc;
 			},
 		},
 	},
