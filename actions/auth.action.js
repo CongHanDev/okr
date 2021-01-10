@@ -49,9 +49,6 @@ const actions = {
 
 	me: {
 		...routers.me,
-		cache: {
-			keys: ["#userID"],
-		},
 		async handler (ctx) {
 			const user = await ctx.call("user.get", {
 				id: ctx.meta.auth.id,
