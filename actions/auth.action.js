@@ -68,8 +68,8 @@ const actions = {
 				return responder.httpBadRequest(translate("unauthorized"), { user_name: translate("user_name_invalid") });
 			}
       const pop = ["service_type","service", "unit", "status"];
-      const services = await ctx.call("service-form.find", { populate: pop, params: { user: ctx.meta.auth.id }});
-      user.services = services;
+      const service_forms = await ctx.call("service-form.find", { populate: pop, params: { user: ctx.meta.auth.id }});
+      user.service_forms = service_forms;
        return user;
 		},
 	},
