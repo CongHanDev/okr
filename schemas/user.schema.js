@@ -30,7 +30,6 @@ const schemas = {
 			"deposit",
 			"services",
 			"otp",
-			"form",
 		],
 
 		/** Validator schema for entity */
@@ -87,6 +86,12 @@ const schemas = {
 			},
 		},
 		indexes: { "$**": "text" },
+		fieldsNotUpdate: [
+			"email",
+			"password",
+			"phone",
+			"otp"
+		]
 	},
 };
 

@@ -20,6 +20,7 @@ const routes = {
 
 	update: {
 		rest: `${ REQUEST.PUT } /:id`,
+		auth: "required",
 	},
 
 	remove: {

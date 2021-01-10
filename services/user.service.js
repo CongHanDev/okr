@@ -39,6 +39,18 @@ module.exports = {
      */
 		update: {
 			...routers.update,
+			async handler (ctx) {
+				let request = await this.validateEntity(ctx.params);
+
+				const updateEntity = {
+					$set: this.mapEntity(request, true),
+				};
+
+				const doc = await this.adapter.updateById(ctx.params.id, updateEntity);
+				const user = await this.transformDocuments(ctx, {}, doc);
+				await this.entityChanged("updated", user, ctx);
+				return user;
+			},
 		},
 
 		/**
@@ -219,7 +231,7 @@ module.exports = {
 			let data = [];
 			for (let i = 0; i < emails.length; i++) {
 				data.push({
-					_id: `c6cdce48-0574-45f6-ad13-05f24d1b7471-${i}`,
+					_id: `c6cdce48-0574-45f6-ad13-05f24d1b7471-${ i }`,
 					avatar: "0de2b567-edb5-4f54-ba18-6d69653ed7ea",
 					banner: "0de2b567-edb5-4f54-ba18-6d69653ed7ea",
 					email: emails[i],

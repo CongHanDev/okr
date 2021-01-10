@@ -80,6 +80,21 @@ module.exports = function (collection) {
 				}
 				return this.httpOK(entity, transformer);
 			},
+
+			mapEntity(request, isUpdate = false){
+				/* Map to entity */
+				let newEntity = {};
+				const fields = _.intersection(_.values(this.settings.fields), _.keys(request));
+				fields.forEach((key) => {
+					newEntity[key] = request[key] || null;
+				});
+				if(isUpdate) {
+					_.values(this.settings.fieldsNotUpdate).forEach((key) => {
+						delete newEntity[key];
+					});
+				}
+				return newEntity;
+			}
 		},
 
 		async started () {
