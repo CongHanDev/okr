@@ -23,6 +23,11 @@ const schemas = {
 			image: { type: "string", optional: true },
 		},
 		indexes: { "$**": "text" },
+		populates: {
+			image: {
+				action: "file.get",
+			},
+		},
 	},
 };
 

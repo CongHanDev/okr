@@ -9,9 +9,6 @@ const routes = {
 
 	list: {
 		rest: `${ REQUEST.GET } `,
-		cache: {
-			keys: ["pageSize", "page"],
-		},
 	},
 
 	get: {
