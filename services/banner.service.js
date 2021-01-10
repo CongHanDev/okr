@@ -58,12 +58,12 @@ module.exports = {
 	methods: {
 		async seedDB () {
 			let data = [];
-			for (let i = 1; i <= 5; i++) {
+			for (let i = 1; i <= 3; i++) {
 				data.push(
 					{
 						_id: uuid.v4(),
 						name: "Banner " + i,
-						image: "0de2b567-edb5-4f54-ba18-6d69653ed7ea",
+						image: `0de2b567-edb5-4f54-ba18-6d69653ed7ea-${ i }`,
 						description: "",
 						created_at: new Date(),
 					});
