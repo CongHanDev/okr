@@ -235,6 +235,7 @@ module.exports = {
 					avatar: "0de2b567-edb5-4f54-ba18-6d69653ed7ea",
 					banner: "0de2b567-edb5-4f54-ba18-6d69653ed7ea",
 					email: emails[i],
+					birthday: "2020-11-02",
 					password: bcrypt.hashSync(pass, 10),
 					phone: phones[i],
 					city: "1d84fccc-bdfe-49ee-ae20-c3f13d503a70-1",
@@ -243,7 +244,6 @@ module.exports = {
 					level: "7d1ae12d-74cc-4ff7-9651-5296c29c7f43-1",
 					attaches: ["0de2b567-edb5-4f54-ba18-6d69653ed7ea"],
 					status: "33a19fcf-a2c2-4beb-82f7-af9b46d18a3d",
-					services: ["cf57da99-6c69-4e48-ad88-ae2115d3b86b-1", "cf57da99-6c69-4e48-ad88-ae2115d3b86b-2"],
 					created_at: new Date(),
 				});
 			}

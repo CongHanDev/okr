@@ -16,6 +16,20 @@ module.exports = {
      */
 		create: {
 			...routers.create,
+			async handler (ctx) {
+				let request = await this.validateEntity(ctx.params);
+				/* Set ID */
+				request._id = uuid.v4();
+				/* Created at */
+				request.created_at = new Date();
+				request.user = ctx.meta.auth.id;
+				/* Map to entity */
+				let newEntity = this.mapEntity(request);
+				/* Insert to database */
+				const doc = await this.adapter.insert(newEntity);
+				await this.entityChanged("created", doc, ctx);
+				return doc;
+			},
 		},
 
 		/**
@@ -40,6 +54,19 @@ module.exports = {
      */
 		update: {
 			...routers.update,
+			async handler (ctx) {
+				let request = await this.validateEntity(ctx.params);
+				/* Created at */
+				request.updated_at = new Date();
+				const updateEntity = {
+					$set: this.mapEntity(request, true),
+				};
+
+				const doc = await this.adapter.updateById(ctx.params.id, updateEntity);
+				const service = await this.transformDocuments(ctx, {}, doc);
+				await this.entityChanged("updated", service, ctx);
+				return service;
+			},
 		},
 
 		/**
