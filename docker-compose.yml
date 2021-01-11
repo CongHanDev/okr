@@ -275,6 +275,8 @@ services:
 
   stan:
     image: nats-streaming
+    command:
+      - "--max_channels=1000"
     networks:
       - internal
 
