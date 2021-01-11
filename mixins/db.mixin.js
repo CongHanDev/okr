@@ -112,6 +112,11 @@ module.exports = function (collection) {
 		},
 	};
 
+	if (!fs.existsSync("./data")) {
+		fs.mkdirSync("./data");
+	}
+	/*
+  schema.adapter = new DbService.MemoryAdapter({ filename: `./data/${ collection }.db` });
 	if (process.env.MONGO_URI) {
 		// Mongo adapter
 		const MongoAdapter = require("moleculer-db-adapter-mongo");
@@ -131,6 +136,6 @@ module.exports = function (collection) {
 
 		schema.adapter = new DbService.MemoryAdapter({ filename: `./data/${ collection }.db` });
 	}
-
+*/
 	return schema;
 };
