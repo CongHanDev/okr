@@ -55,6 +55,9 @@ module.exports = {
 	 * Methods
 	 */
 	methods: {
+		async afterConnected() {
+			this.adapter.collection.createIndex(schema.indexes);
+		},
 		async seedDB() {
 			let data = [];
 			for (let i = 1; i <= 10; i++) {

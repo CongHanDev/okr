@@ -7,45 +7,48 @@ module.exports = {
 	...schema,
 
 	/**
-   * Actions
-   */
+	 * Actions
+	 */
 	actions: {
-
-	  /**
-     * Get
-     *
-     */
+		/**
+		 * Get
+		 *
+		 */
 
 		get: {
 			...routers.get,
 		},
 
 		/**
-     * List
-     *
-     */
+		 * List
+		 *
+		 */
 		list: {
 			...routers.list,
 		},
 		/**
-     * Update
-     *
-     */
+		 * Update
+		 *
+		 */
 		update: {
 			...routers.update,
 		},
 
 		/**
-     * Remove
-     *
-     */
+		 * Remove
+		 *
+		 */
 		remove: {
 			...routers.remove,
 		},
 	},
 
 	/**
-   * Methods
-   */
-	methods: {},
+	 * Methods
+	 */
+	methods: {
+		async afterConnected() {
+			this.adapter.collection.createIndex(schema.indexes);
+		},
+	},
 };
