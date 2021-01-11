@@ -55,17 +55,17 @@ module.exports = {
 	 * Methods
 	 */
 	methods: {
-		// async seedDB() {
-		// 	let data = [];
-		// 	for (let i = 1; i <= 10; i++) {
-		// 		data.push({
-		// 			_id: `ccce1f35-cc78-404c-80f8-3d682f293abe-${i}`,
-		// 			name: "Expertise " + i,
-		// 			description: "",
-		// 			created_at: new Date(),
-		// 		});
-		// 	}
-		// 	await this.adapter.insertMany(data);
-		// },
+		async seedDB() {
+			let data = [];
+			for (let i = 1; i <= 10; i++) {
+				data.push({
+					_id: `ccce1f35-cc78-404c-80f8-3d682f293abe-${i}`,
+					name: "Expertise " + i,
+					description: "",
+					created_at: new Date(),
+				});
+			}
+			await this.adapter.insertMany(data);
+		},
 	},
 };
