@@ -78,19 +78,51 @@ module.exports = {
 	 * Methods
 	 */
 	methods: {
-		// async seedDB () {
-		// 	const data =
-		// {
-		// 	_id: "0de2b567-edb5-4f54-ba18-6d69653ed7ea",
-		// 	name: "0de2b567-edb5-4f54-ba18-6d69653ed7ea.png",
-		// 	upload_name: "seeder.png",
-		// 	mime_type: "image/png",
-		// 	path: "/assets/avatar/0de2b567-edb5-4f54-ba18-6d69653ed7ea.png",
-		// 	model: "avatar",
-		// 	created_at: new Date(),
-		// };
-		// 	await this.adapter.insertMany([data]);
-		// },
+		async seedDB() {
+			const data = [
+				{
+					_id: "0de2b567-edb5-4f54-ba18-6d69653ed7ea",
+					name: "0de2b567-edb5-4f54-ba18-6d69653ed7ea.png",
+					upload_name: "seeder.png",
+					mime_type: "image/png",
+					path:
+						"/assets/avatar/0de2b567-edb5-4f54-ba18-6d69653ed7ea.png",
+					model: "avatar",
+					created_at: new Date(),
+				},
+				{
+					_id: "0de2b567-edb5-4f54-ba18-6d69653ed7ea-1",
+					name: "0de2b567-edb5-4f54-ba18-6d69653ed7ea-1.png",
+					upload_name: "seeder.png",
+					mime_type: "image/png",
+					path:
+						"/assets/banner/0de2b567-edb5-4f54-ba18-6d69653ed7ea-1.png",
+					model: "avatar",
+					created_at: new Date(),
+				},
+				{
+					_id: "0de2b567-edb5-4f54-ba18-6d69653ed7ea-2",
+					name: "0de2b567-edb5-4f54-ba18-6d69653ed7ea-2.png",
+					upload_name: "seeder.png",
+					mime_type: "image/png",
+					path:
+						"/assets/banner/0de2b567-edb5-4f54-ba18-6d69653ed7ea-2.png",
+					model: "avatar",
+					created_at: new Date(),
+				},
+				{
+					_id: "0de2b567-edb5-4f54-ba18-6d69653ed7ea-3",
+					name: "0de2b567-edb5-4f54-ba18-6d69653ed7ea-3.png",
+					upload_name: "seeder.png",
+					mime_type: "image/png",
+					path:
+						"/assets/banner/0de2b567-edb5-4f54-ba18-6d69653ed7ea-3.png",
+					model: "avatar",
+					created_at: new Date(),
+				},
+			];
+			await this.adapter.insertMany([data]);
+		},
 		async save(model, ctx) {
 			return new this.Promise((resolve, reject) => {
 				const currentPath = `/assets/${model}`;

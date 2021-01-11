@@ -49,6 +49,18 @@ module.exports = {
 		remove: {
 			...routers.remove,
 		},
+		/**
+     * Services
+     *
+     */
+		services: {
+			...routers.services,
+			async handler (ctx) {
+				const id = ctx.params.id;
+				const services = await ctx.call("service.find", { query: { service_type: id } });
+				return services;
+			},
+		},
 	},
 
 	/**

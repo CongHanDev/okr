@@ -9,9 +9,6 @@ const routes = {
 
 	list: {
 		rest: `${ REQUEST.GET } `,
-		cache: {
-			keys: ["pageSize", "page"],
-		},
 	},
 
 	get: {
@@ -20,6 +17,7 @@ const routes = {
 
 	update: {
 		rest: `${ REQUEST.PUT } /:id`,
+		auth: "required",
 	},
 
 	remove: {

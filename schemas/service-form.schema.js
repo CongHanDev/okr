@@ -48,6 +48,10 @@ const schemas = {
 			user: { type: "string", optional: true },
 		},
 		indexes: { "$**": "text" },
+
+		fieldsNotUpdate: [
+			"user",
+		],
 	},
 };
 

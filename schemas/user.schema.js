@@ -20,6 +20,7 @@ const schemas = {
 			"birthday",
 			"address",
 			"user_type",
+			"title",
 			"introduce",
 			"website",
 			"expertises",
@@ -27,7 +28,6 @@ const schemas = {
 			"attaches",
 			"status",
 			"deposit",
-			"services",
 			"otp",
 		],
 
@@ -41,8 +41,10 @@ const schemas = {
 			phone: { type: "string", min: 8, pattern: /^[a-zA-Z0-9]+$/ },
 			city: { type: "string", optional: true },
 			identity_card: { type: "string", optional: true },
-			birthday: { type: "date", optional: true },
+			birthday: { type: "string", optional: true },
+			user_type: { type: "string", optional: true },
 			address: { type: "string", optional: true },
+			title: { type: "string", optional: true },
 			introduce: { type: "string", optional: true },
 			website: { type: "string", optional: true },
 			expertises: { type: "array", items: "string", optional: true },
@@ -75,14 +77,18 @@ const schemas = {
 			attaches: {
 				action: "file.get",
 			},
-			services: {
-				action: "service.get",
-			},
 			status: {
 				action: "status.get",
 			},
 		},
 		indexes: { "$**": "text" },
+
+		fieldsNotUpdate: [
+			"email",
+			"password",
+			"phone",
+			"otp",
+		],
 	},
 };
 

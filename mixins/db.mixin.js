@@ -80,6 +80,27 @@ module.exports = function (collection) {
 				}
 				return this.httpOK(entity, transformer);
 			},
+
+			mapEntity (request, isUpdate = false) {
+				/* Map to entity */
+				let newEntity = {};
+				const fields = _.intersection(_.values(this.settings.fields), _.keys(request));
+				fields.forEach((key) => {
+					newEntity[key] = request[key] !== null ? request[key] : null;
+				});
+				if (isUpdate) {
+					_.values(this.settings.fieldsNotUpdate).forEach((key) => {
+						delete newEntity[key];
+						if (newEntity["_id"]) {
+							delete newEntity["_id"];
+						}
+						if (newEntity["id"]) {
+							delete newEntity["id"];
+						}
+					});
+				}
+				return newEntity;
+			},
 		},
 
 		async started () {

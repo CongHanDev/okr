@@ -1,7 +1,8 @@
 "use strict";
 
-const routers = require("../routes/work-formality.route");
-const schema = require("../schemas/work-formality.schema");
+const routers = require("../routes/banner.route");
+const schema = require("../schemas/banner.schema");
+const uuid = require("uuid");
 
 module.exports = {
 	...schema,
@@ -10,6 +11,14 @@ module.exports = {
    * Actions
    */
 	actions: {
+		/**
+     * Create
+     *
+     */
+		create: {
+			...routers.create,
+		},
+
 		/**
      * Get
      *
@@ -49,11 +58,12 @@ module.exports = {
 	methods: {
 		async seedDB () {
 			let data = [];
-			for (let i = 1; i <= 10; i++) {
+			for (let i = 1; i <= 3; i++) {
 				data.push(
 					{
-						_id: `25b2af5b-588c-4583-b906-2bc328dbd09d-${ i }`,
-						name: "Work formality " + i,
+						_id: uuid.v4(),
+						name: "Banner " + i,
+						image: `0de2b567-edb5-4f54-ba18-6d69653ed7ea-${ i }`,
 						description: "",
 						created_at: new Date(),
 					});
