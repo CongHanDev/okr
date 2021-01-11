@@ -14,4 +14,5 @@ module.exports = {
 	send_email_error: "Can't send email.",
 	account_not_active: "The account is not activated.",
 	password_reset: "Reset password.",
+	file_not_found: "File not found.",
 };
