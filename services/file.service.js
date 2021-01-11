@@ -2,6 +2,8 @@
 
 const routers = require("../routes/file.route");
 const schema = require("../schemas/file.schema");
+const responder = require("../mixins/response.mixin");
+const { translate } = require("../languages/index.language");
 const fs = require("fs");
 const path = require("path");
 const uuid = require("uuid");
@@ -29,6 +31,20 @@ module.exports = {
 
 		get: {
 			...routers.get,
+		},
+
+		data: {
+			...routers.data,
+			async handler (ctx) {
+				const file = await this.adapter.findById(ctx.params.id);
+				if (!file) {
+					return responder.httpNotFound(translate("file_not_found"));
+				}
+				ctx.meta.$responseType = file.mime_type;
+				const uploadDir = path.join(__dirname, `../public/assets/${ file.model }`);
+				const filePath = path.join(uploadDir, file.name);
+				return fs.readFileSync(filePath);
+			},
 		},
 
 		/**
