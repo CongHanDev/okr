@@ -80,6 +80,7 @@ module.exports = {
 						let newEntity = this.mapEntity(request);
 						const doc = await this.adapter.insert(newEntity);
 						await this.entityChanged("created", doc, ctx);
+						return newEntity;
 					}
 					return current;
 				}

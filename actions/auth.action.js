@@ -81,7 +81,7 @@ const actions = {
 
 				currentUser = await ctx.call("user.create", newUser);
 			}
-			return currentUser;
+			return generateToken(currentUser);
 		},
 	},
 
