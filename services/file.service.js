@@ -73,7 +73,7 @@ module.exports = {
 		uploadSingle: {
 			auth: "required",
 			handler (ctx) {
-				return this.save("images", ctx);
+				return this.save("files", ctx);
 			},
 		},
 
