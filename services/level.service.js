@@ -56,18 +56,17 @@ module.exports = {
 	 * Methods
 	 */
 	methods: {
-		// async seedDB () {
-		// 	let data = [];
-		// 	for (let i = 1; i <= 5; i++) {
-		// 		data.push(
-		// 			{
-		// 				_id: `7d1ae12d-74cc-4ff7-9651-5296c29c7f43-${ i }`,
-		// 				name: "Level " + i,
-		// 				description: "",
-		// 				created_at: new Date(),
-		// 			});
-		// 	}
-		// 	await this.adapter.insertMany(data);
-		// },
+		async seedDB() {
+			let data = [];
+			for (let i = 1; i <= 5; i++) {
+				data.push({
+					_id: `7d1ae12d-74cc-4ff7-9651-5296c29c7f43-${i}`,
+					name: "Level " + i,
+					description: "",
+					created_at: new Date(),
+				});
+			}
+			await this.adapter.insertMany(data);
+		},
 	},
 };
