@@ -56,7 +56,7 @@ module.exports = {
 	 */
 	methods: {
 		async afterConnected() {
-			this.adapter.collection.createIndex(schema.indexes);
+			this.adapter.collection.createIndex(schema.settings.indexes);
 		},
 	},
 };

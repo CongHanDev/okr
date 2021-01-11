@@ -78,9 +78,6 @@ module.exports = {
 	 * Methods
 	 */
 	methods: {
-		async afterConnected() {
-			this.adapter.collection.createIndex(schema.indexes);
-		},
 		async seedDB() {
 			const data = [
 				{
@@ -157,6 +154,9 @@ module.exports = {
 					ctx.params.pipe(f);
 				}
 			});
+		},
+		async afterConnected() {
+			this.adapter.collection.createIndex(schema.settings.indexes);
 		},
 	},
 };
