@@ -15,7 +15,7 @@ const schemas = {
 			"deleted_at",
 		],
 		entityValidator: {
-			name: { type: "string" },
+			name: { type: "string", text: true },
 			description: { type: "string" },
 		},
 		indexes: { "$**": "text" },
