@@ -82,23 +82,18 @@ module.exports = function (collection) {
 			},
 
 			mapEntity (request, isUpdate = false) {
+				/* Get fields */
+				let fields = this.settings.fields;
+				if (isUpdate) {
+					fields = _.intersection(_.values(this.settings.fields), _.keys(request));
+					fields = _.difference(fields, [...this.settings.fieldsNotUpdate, "_id", "id"]);
+				}
+
 				/* Map to entity */
 				let newEntity = {};
-				const fields = _.intersection(_.values(this.settings.fields), _.keys(request));
-				fields.forEach((key) => {
-					newEntity[key] = request[key] !== null ? request[key] : null;
+				fields.forEach((field) => {
+					newEntity[field] = request[field] != null ? request[field] : null;
 				});
-				if (isUpdate) {
-					_.values(this.settings.fieldsNotUpdate).forEach((key) => {
-						delete newEntity[key];
-						if (newEntity["_id"]) {
-							delete newEntity["_id"];
-						}
-						if (newEntity["id"]) {
-							delete newEntity["id"];
-						}
-					});
-				}
 				return newEntity;
 			},
 		},
