@@ -22,13 +22,13 @@
     "eslint": "^7.7.0",
     "jest": "^26.4.2",
     "jest-cli": "^26.4.2",
-    "moleculer-repl": "^0.6.4"
+    "moleculer-repl": "^0.6.4",
+    "dotenv": "^8.2.0"
   },
   "dependencies": {
     "axios": "^0.21.1",
     "bcryptjs": "^2.4.3",
     "crypto-random-string": "^3.3.0",
-    "dotenv": "^8.2.0",
     "email-templates": "^8.0.3",
     "googleapis": "^67.0.0",
     "http-status-codes": "^2.1.4",
