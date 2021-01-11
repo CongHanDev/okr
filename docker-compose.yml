@@ -45,6 +45,19 @@ services:
     networks:
       - internal
 
+  banner:
+    build:
+      context: .
+    image: okr-business
+    env_file: docker-compose.env
+    environment:
+      SERVICES: banner
+    depends_on:
+      - mongo
+      - stan
+    networks:
+      - internal
+
   expertise:
     build:
       context: .
