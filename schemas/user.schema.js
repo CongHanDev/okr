@@ -29,6 +29,7 @@ const schemas = {
 			"status",
 			"deposit",
 			"otp",
+			"services",
 		],
 
 		/** Validator schema for entity */
@@ -56,6 +57,9 @@ const schemas = {
 			status: { type: "string", optional: true },
 		},
 		populates: {
+			services: {
+				action: "service.get",
+			},
 			avatar: {
 				action: "file.get",
 			},
@@ -83,12 +87,7 @@ const schemas = {
 		},
 		indexes: { "$**": "text" },
 
-		fieldsNotUpdate: [
-			"email",
-			"password",
-			"phone",
-			"otp",
-		],
+		fieldsNotUpdate: ["email", "password", "phone", "otp"],
 	},
 };
 
