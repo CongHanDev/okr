@@ -103,7 +103,7 @@ const actions = {
 			/* Send OTP */
 			const otp = cryptoRandomString({ length: 6, type: "numeric" }).toUpperCase();
 			user.otp = otp;
-			let isSend = await emailProvider.passwordVerify(user);
+			const isSend = await emailProvider.passwordVerify(user);
 			if (isSend) {
 				await ctx.call("user.update", { id: user._id, otp: otp });
 				return responder.httpOK([]);
@@ -119,16 +119,15 @@ const actions = {
 	verifyForgotPassword: {
 		...routers.verifyPassword,
 		async handler (ctx) {
-			const { email, otp, password } = ctx.params;
-			const users = await ctx.call("user.find", { query: { email: email } });
+			const users = await ctx.call("user.find", { query: { email: ctx.params.email } });
 			const user = _.first(users);
 			if (!user) {
-				return responder.httpNotFound();
+				return responder.httpNotFound(translate("user_not_found"));
 			}
-			if (user.otp != otp) {
+			if (ctx.params.otp != user.otp) {
 				return responder.httpBadRequest(translate("password_reset"), { otp: translate("otp_valid") });
 			}
-			await ctx.call("user.update", { id: user._id, otp: "", password: bcrypt.hashSync(password, 10) });
+			await ctx.call("user.update", { id: user._id, otp: "", password: bcrypt.hashSync(ctx.params.password, 10) });
 			return responder.httpOK([]);
 		},
 	},
@@ -148,7 +147,7 @@ const actions = {
 			let errors = {};
 			const entity = await ctx.call("user.get", { id: request.id });
 			if (!entity) {
-				return responder.httpNotFound();
+				return responder.httpNotFound(translate("user_not_found"));
 			}
 			/* Validate otp */
 			if (!_.has(request, "otp")) {
@@ -206,13 +205,20 @@ const actions = {
 				],
 			});
 			if (!user) {
-				return responder.httpBadRequest(translate("unauthorized"), { user_name: translate("user_name_invalid") },
+				return responder.httpBadRequest(
+					translate("unauthorized"),
+					{ user_name: translate("user_name_invalid") },
 				);
-
 			}
 			const pop = ["service_type", "service", "unit", "status", "role"];
 			user.service_forms = await ctx.call("service-form.find",
-				{ populate: pop, query: { user: ctx.meta.auth.id } });
+				{
+					populate: pop,
+					query: {
+						user: ctx.meta.auth.id,
+					},
+				},
+			);
 			return user;
 		},
 	},
