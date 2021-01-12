@@ -41,8 +41,7 @@ module.exports = {
 					return responder.httpNotFound(translate("file_not_found"));
 				}
 				ctx.meta.$responseType = file.mime_type;
-				const uploadDir = path.join(__dirname, `../public/assets/${ file.model }`);
-				const filePath = path.join(uploadDir, file.name);
+				const filePath = path.join(__dirname, `../public${ file.path }`);
 				return fs.readFileSync(filePath);
 			},
 		},
@@ -81,7 +80,7 @@ module.exports = {
 			auth: "required",
 			async handler (ctx) {
 				const file = await this.save("avatar", ctx);
-				await ctx.call("user.update", { id: ctx.meta.auth.id, avatar_id: { ...file }._id });
+				await ctx.call("user.update", { id: ctx.meta.auth.id, avatar: { ...file }._id });
 				return file;
 			},
 		},
