@@ -80,7 +80,7 @@ module.exports = {
 			auth: "required",
 			async handler (ctx) {
 				const file = await this.save("avatar", ctx);
-				await ctx.call("user.update", { id: ctx.meta.auth.id, avatar_id: { ...file }._id });
+				await ctx.call("user.update", { id: ctx.meta.auth.id, avatar: { ...file }._id });
 				return file;
 			},
 		},
