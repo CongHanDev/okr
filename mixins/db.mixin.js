@@ -133,7 +133,7 @@ module.exports = function (collection) {
 		schema.adapter = new DbService.MemoryAdapter({ filename: `./data/${ collection }.db` });
 	}
   */
-  
+
 	// Create data folder
 	if (!fs.existsSync("./data")) {
 		fs.mkdirSync("./data");

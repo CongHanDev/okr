@@ -41,7 +41,6 @@ const actions = {
 				return responder.httpBadRequest(translate("account_not_active"),
 					{ user_name: translate("account_not_active") });
 			}
-
 			return generateToken(user);
 		},
 	},
@@ -210,7 +209,7 @@ const actions = {
 				);
 
 			}
-			const pop = ["service_type", "service", "unit", "status"];
+			const pop = ["service_type", "service", "unit", "status", "role"];
 			const service_forms = await ctx.call("service-form.find",
 				{ populate: pop, query: { user: ctx.meta.auth.id } });
 			user.service_forms = service_forms;
