@@ -193,6 +193,7 @@ module.exports = {
 			const phones = ["0932779270", "0344403435", "0987654321"];
 			let data = [];
 			for (let i = 0; i < emails.length; i++) {
+				const role = i === 0 ? "b1f08c96-f1f6-4068-8fe8-733e1ce5b7fd" : "97cfd6cc-5fe6-4127-8374-0d268bf17ab3";
 				data.push({
 					_id: `c6cdce48-0574-45f6-ad13-05f24d1b7471-${ i }`,
 					avatar: "0de2b567-edb5-4f54-ba18-6d69653ed7ea",
@@ -207,6 +208,7 @@ module.exports = {
 					level: "7d1ae12d-74cc-4ff7-9651-5296c29c7f43-1",
 					attaches: ["0de2b567-edb5-4f54-ba18-6d69653ed7ea"],
 					status: "33a19fcf-a2c2-4beb-82f7-af9b46d18a3d",
+					role: role,
 					created_at: new Date(),
 				});
 			}
