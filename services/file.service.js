@@ -41,8 +41,7 @@ module.exports = {
 					return responder.httpNotFound(translate("file_not_found"));
 				}
 				ctx.meta.$responseType = file.mime_type;
-				const uploadDir = path.join(__dirname, `../public/assets/${ file.model }`);
-				const filePath = path.join(uploadDir, file.name);
+				const filePath = path.join(__dirname, `../public${ file.path }`);
 				return fs.readFileSync(filePath);
 			},
 		},
