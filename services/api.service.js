@@ -181,14 +181,18 @@ module.exports = {
 			if (auth && auth.startsWith("Bearer")) {
 				const token = auth.slice(7);
 				// Check the token. Tip: call a service which verify the token. E.g. `accounts.resolveToken`
-				const userID = await ctx.call("auth.resolveToken", { token });
-				if (userID) {
-					ctx.meta.auth = { id: userID };
-				} else {
-					// Invalid token
-					responder.httpUnauthorized(
-						ApiGateway.Errors.ERR_INVALID_TOKEN,
-					);
+				try {
+					const userID = await ctx.call("auth.resolveToken", { token });
+					if (userID) {
+						ctx.meta.auth = { id: userID };
+					} else {
+						// Invalid token
+						responder.httpUnauthorized(
+							ApiGateway.Errors.ERR_INVALID_TOKEN,
+						);
+					}
+				} catch (error) {
+					responder.httpError(translate("token_error"));
 				}
 			} else {
 				// No token. Throw an error or do nothing if anonymous access is allowed.
