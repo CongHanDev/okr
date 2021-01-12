@@ -125,7 +125,7 @@ const actions = {
 			if (!user) {
 				return responder.httpNotFound();
 			}
-			if (user.otp !== otp) {
+			if (user.otp != otp) {
 				return responder.httpBadRequest(translate("password_reset"), { otp: translate("otp_valid") });
 			}
 			await ctx.call("user.update", { id: user._id, otp: "", password: bcrypt.hashSync(password, 10) });
@@ -154,7 +154,7 @@ const actions = {
 			if (!_.has(request, "otp")) {
 				errors.otp = translate("otp_required");
 			}
-			if (entity.otp !== request.otp) {
+			if (entity.otp != request.otp) {
 				errors.otp = translate("otp_valid");
 			}
 			if (_.keys(errors).length) {

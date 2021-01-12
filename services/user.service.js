@@ -97,6 +97,11 @@ module.exports = {
 					query: { slug: "NOT_ACTIVATE", type: "USER" },
 				});
 				entity.status = _.first(status)._id;
+				/* Role */
+				const role = await ctx.call("role.find", {
+					query: { slug: "USER" },
+				});
+				entity.role = _.first(role)._id;
 
 				let errors = {};
 				/* Validate password */
