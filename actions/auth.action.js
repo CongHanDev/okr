@@ -28,7 +28,7 @@ const actions = {
 		async handler (ctx) {
 			const { user_name, password } = ctx.params;
 			const users = await ctx.call("user.find",
-				{ populate: ["status"], query: { $or: [{ email: user_name }, { phone: user_name }] } });
+				{ populate: ["status", "role"], query: { $or: [{ email: user_name }, { phone: user_name }] } });
 			const user = _.first(users);
 			if (!user) {
 				return responder.httpBadRequest(translate("unauthorized"), { user_name: translate("user_name_invalid") });
@@ -211,9 +211,8 @@ const actions = {
 
 			}
 			const pop = ["service_type", "service", "unit", "status", "role"];
-			const service_forms = await ctx.call("service-form.find",
+			user.service_forms = await ctx.call("service-form.find",
 				{ populate: pop, query: { user: ctx.meta.auth.id } });
-			user.service_forms = service_forms;
 			return user;
 		},
 	},
@@ -274,6 +273,7 @@ const generateToken = (user) => {
 
 	return {
 		token: token,
+		role: user.role.slug,
 		exp: expiredTime,
 	};
 };
