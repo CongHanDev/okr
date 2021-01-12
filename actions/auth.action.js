@@ -202,6 +202,7 @@ const actions = {
 					"attaches",
 					"services",
 					"status",
+					"role",
 				],
 			});
 			if (!user) {
