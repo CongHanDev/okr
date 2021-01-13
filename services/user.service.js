@@ -14,38 +14,41 @@ module.exports = {
 	...schema,
 
 	/**
-   * Actions
-   */
+	 * Actions
+	 */
 	actions: {
 		/**
-     * Get
-     *
-     */
+		 * Get
+		 *
+		 */
 
 		get: {
 			...routers.get,
 		},
 
 		/**
-     * List
-     *
-     */
+		 * List
+		 *
+		 */
 		list: {
 			...routers.list,
 		},
 		/**
-     * Update
-     *
-     */
+		 * Update
+		 *
+		 */
 		update: {
 			...routers.update,
-			async handler (ctx) {
+			async handler(ctx) {
 				let request = ctx.params;
 				const updateEntity = {
 					$set: this.mapEntity(request, true),
 				};
 
-				const doc = await this.adapter.updateById(request.id, updateEntity);
+				const doc = await this.adapter.updateById(
+					request.id,
+					updateEntity
+				);
 				const user = await this.transformDocuments(ctx, {}, doc);
 				await this.entityChanged("updated", user, ctx);
 				return user;
@@ -53,27 +56,29 @@ module.exports = {
 		},
 
 		/**
-     * Remove
-     *
-     */
+		 * Remove
+		 *
+		 */
 		remove: {
 			...routers.remove,
 		},
 		/**
-     * Register a new user
-     *
-     * @actions
-     * @param {Object} user - User entity
-     *
-     * @returns {Object} Created entity & token
-     */
+		 * Register a new user
+		 *
+		 * @actions
+		 * @param {Object} user - User entity
+		 *
+		 * @returns {Object} Created entity & token
+		 */
 		create: {
 			...routers.create,
-			async handler (ctx) {
+			async handler(ctx) {
 				let request = ctx.params;
 				const isSocial = request.access_token || false;
 				if (isSocial) {
-					const dbUser = await this.adapter.find({ query: { email: request.email } });
+					const dbUser = await this.adapter.find({
+						query: { email: request.email },
+					});
 					const current = _.first(dbUser);
 					if (!current) {
 						/* Map to entity */
@@ -84,9 +89,14 @@ module.exports = {
 					}
 					return current;
 				}
-				const entity = isSocial ? request : await this.validateEntity(request);
+				const entity = isSocial
+					? request
+					: await this.validateEntity(request);
 				/* Set OTP */
-				const otp = cryptoRandomString({ length: 6, type: "numeric" }).toUpperCase();
+				const otp = cryptoRandomString({
+					length: 6,
+					type: "numeric",
+				}).toUpperCase();
 				entity.otp = otp;
 				/* Set ID */
 				entity._id = uuid.v4();
@@ -124,7 +134,7 @@ module.exports = {
 				if (_.keys(errors).length) {
 					return responder.httpBadRequest(
 						translate("validate"),
-						errors,
+						errors
 					);
 				}
 				/* Map to entity */
@@ -146,18 +156,18 @@ module.exports = {
 		},
 
 		/**
-     * change-password with username & password
-     *
-     * @actions
-     * @param {Object} phone - phone credentials
-     *
-     * @returns {Object} oldPassword - Logged in user with token
-     *
-     * @returns {Object} newPassword - Logged in user with token
-     */
+		 * change-password with username & password
+		 *
+		 * @actions
+		 * @param {Object} phone - phone credentials
+		 *
+		 * @returns {Object} oldPassword - Logged in user with token
+		 *
+		 * @returns {Object} newPassword - Logged in user with token
+		 */
 		changePassword: {
 			...routers.passwordChange,
-			async handler (ctx) {
+			async handler(ctx) {
 				const { old_password, new_password } = ctx.params;
 				const user = await this.getById(ctx.meta.auth.id);
 				if (!user) {
@@ -172,7 +182,7 @@ module.exports = {
 				if (_.keys(errors).length) {
 					return responder.httpBadRequest(
 						translate("validate"),
-						errors,
+						errors
 					);
 				}
 				const update = {
@@ -189,38 +199,38 @@ module.exports = {
 	},
 
 	/**
-   * Methods
-   */
+	 * Methods
+	 */
 	methods: {
-		async seedDB () {
-			const pass = "123456";
-			const emails = ["nhanhkut3@gmail.com", "admin@gmail.com", "local@gmail.com"];
-			const phones = ["0932779270", "0344403435", "0987654321"];
-			let data = [];
-			for (let i = 0; i < emails.length; i++) {
-				const role = i === 0 ? "b1f08c96-f1f6-4068-8fe8-733e1ce5b7fd" : "97cfd6cc-5fe6-4127-8374-0d268bf17ab3";
-				data.push({
-					_id: `c6cdce48-0574-45f6-ad13-05f24d1b7471-${ i }`,
-					avatar: "0de2b567-edb5-4f54-ba18-6d69653ed7ea",
-					banner: "0de2b567-edb5-4f54-ba18-6d69653ed7ea",
-					email: emails[i],
-					birthday: "2020-11-02",
-					password: bcrypt.hashSync(pass, 10),
-					phone: phones[i],
-					city: "1d84fccc-bdfe-49ee-ae20-c3f13d503a70-1",
-					user_type: "83ece746-bdb2-42c7-8df8-0eb5325a08af-1",
-					expertises: ["ccce1f35-cc78-404c-80f8-3d682f293abe-1", "ccce1f35-cc78-404c-80f8-3d682f293abe-2"],
-					level: "7d1ae12d-74cc-4ff7-9651-5296c29c7f43-1",
-					attaches: ["0de2b567-edb5-4f54-ba18-6d69653ed7ea"],
-					status: "33a19fcf-a2c2-4beb-82f7-af9b46d18a3d",
-					role: role,
-					created_at: new Date(),
-				});
-			}
-			await this.adapter.insertMany(data);
-		},
+		// async seedDB () {
+		// 	const pass = "123456";
+		// 	const emails = ["nhanhkut3@gmail.com", "admin@gmail.com", "local@gmail.com"];
+		// 	const phones = ["0932779270", "0344403435", "0987654321"];
+		// 	let data = [];
+		// 	for (let i = 0; i < emails.length; i++) {
+		// 		const role = i === 0 ? "b1f08c96-f1f6-4068-8fe8-733e1ce5b7fd" : "97cfd6cc-5fe6-4127-8374-0d268bf17ab3";
+		// 		data.push({
+		// 			_id: `c6cdce48-0574-45f6-ad13-05f24d1b7471-${ i }`,
+		// 			avatar: "0de2b567-edb5-4f54-ba18-6d69653ed7ea",
+		// 			banner: "0de2b567-edb5-4f54-ba18-6d69653ed7ea",
+		// 			email: emails[i],
+		// 			birthday: "2020-11-02",
+		// 			password: bcrypt.hashSync(pass, 10),
+		// 			phone: phones[i],
+		// 			city: "1d84fccc-bdfe-49ee-ae20-c3f13d503a70-1",
+		// 			user_type: "83ece746-bdb2-42c7-8df8-0eb5325a08af-1",
+		// 			expertises: ["ccce1f35-cc78-404c-80f8-3d682f293abe-1", "ccce1f35-cc78-404c-80f8-3d682f293abe-2"],
+		// 			level: "7d1ae12d-74cc-4ff7-9651-5296c29c7f43-1",
+		// 			attaches: ["0de2b567-edb5-4f54-ba18-6d69653ed7ea"],
+		// 			status: "33a19fcf-a2c2-4beb-82f7-af9b46d18a3d",
+		// 			role: role,
+		// 			created_at: new Date(),
+		// 		});
+		// 	}
+		// 	await this.adapter.insertMany(data);
+		// },
 
-		async afterConnected () {
+		async afterConnected() {
 			this.adapter.collection.createIndex(schema.settings.indexes);
 		},
 	},
