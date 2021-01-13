@@ -1,4 +1,5 @@
 const nodeJsonTransformer = require("json-transformer-node");
+const { translate } = require("../languages/index.language");
 const { StatusCodes } = require("http-status-codes");
 const { MoleculerError } = require("moleculer").Errors;
 const _ = require("lodash");
@@ -45,8 +46,7 @@ module.exports = {
 	/**
    * Response bad request with status 400
    *
-   * @param {String} type
-   * @param {Object} messages
+   * @param {String} messages
    */
 	httpError (messages) {
 		throw new MoleculerError(messages, StatusCodes.INTERNAL_SERVER_ERROR);
@@ -81,6 +81,6 @@ module.exports = {
    * @param {string} messages
    */
 	httpNotFound (messages = "") {
-		throw new MoleculerError(messages, StatusCodes.NOT_FOUND);
+		throw new MoleculerError(messages + translate("not_found"), StatusCodes.NOT_FOUND);
 	},
 };

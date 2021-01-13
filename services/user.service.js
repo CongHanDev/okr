@@ -161,7 +161,7 @@ module.exports = {
 				const { old_password, new_password } = ctx.params;
 				const user = await this.getById(ctx.meta.auth.id);
 				if (!user) {
-					return responder.httpNotFound();
+					return responder.httpNotFound(translate("user"));
 				}
 				let errors = {};
 				const res = await bcrypt.compare(old_password, user.password);

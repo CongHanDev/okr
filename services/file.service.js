@@ -38,7 +38,7 @@ module.exports = {
 			async handler (ctx) {
 				const file = await this.adapter.findById(ctx.params.id);
 				if (!file) {
-					return responder.httpNotFound(translate("file_not_found"));
+					return responder.httpNotFound("File");
 				}
 				ctx.meta.$responseType = file.mime_type;
 				const filePath = path.join(__dirname, `../public${ file.path }`);

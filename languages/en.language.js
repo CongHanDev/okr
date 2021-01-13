@@ -17,4 +17,7 @@ module.exports = {
 	file_not_found: "File not found.",
 	user_not_found: "User not found.",
 	token_error: "Can't accept with token.",
+	not_found: " not found",
+	user: "User",
+	account: "Account",
 };
