@@ -2,6 +2,7 @@
 
 const ApiGateway = require("moleculer-web");
 const responder = require("../mixins/response.mixin");
+const { translate } = require("../languages/index.language");
 
 /**
  * @typedef {import('moleculer').Context} Context Moleculer's Context
@@ -192,7 +193,7 @@ module.exports = {
 						);
 					}
 				} catch (error) {
-					responder.httpError(translate("token_error"));
+					responder.httpError("Can't accept with token.");
 				}
 			} else {
 				// No token. Throw an error or do nothing if anonymous access is allowed.
