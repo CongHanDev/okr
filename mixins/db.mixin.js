@@ -137,7 +137,6 @@ module.exports = function (collection) {
 		// Mongo adapter
 
 		const MongoAdapter = require("moleculer-db-adapter-mongo");
-
 		schema.adapter = new MongoAdapter(process.env.MONGO_URI, {
 			keepAlive: 1,
 		});
