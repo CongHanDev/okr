@@ -68,5 +68,8 @@ module.exports = {
 			}
 			await this.adapter.insertMany(data);
 		},
+		async afterConnected () {
+			this.adapter.collection.createIndex(schema.settings.indexes);
+		},
 	},
 };

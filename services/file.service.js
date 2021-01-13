@@ -90,6 +90,9 @@ module.exports = {
    * Methods
    */
 	methods: {
+		async afterConnected () {
+			this.adapter.collection.createIndex(schema.settings.indexes);
+		},
 		async seedDB () {
 			const data =
         [

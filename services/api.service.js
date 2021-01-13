@@ -3,6 +3,7 @@
 const ApiGateway = require("moleculer-web");
 const responder = require("../mixins/response.mixin");
 const { translate } = require("../languages/index.language");
+const _ = require("lodash");
 
 /**
  * @typedef {import('moleculer').Context} Context Moleculer's Context
@@ -150,7 +151,9 @@ module.exports = {
 		// on Error
 		onError (req, res, err) {
 			res.setHeader("Content-Type", "application/json");
-			res.writeHead(err.code || 500);
+			if (err.code && _.includes([500, 404, 401], err.code)) {
+				res.writeHead(err.code);
+			}
 			res.end(
 				JSON.stringify({
 					status: err.code || 500,
