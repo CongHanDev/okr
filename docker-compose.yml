@@ -1,7 +1,6 @@
 version: "3.3"
 
 services:
-
   api:
     build:
       context: .
@@ -11,7 +10,7 @@ services:
       SERVICES: api
       PORT: 3000
     depends_on:
-      - stan
+      - nats
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.api-gw.rule=PathPrefix(`/`)"
@@ -28,7 +27,7 @@ services:
       SERVICES: auth
     depends_on:
       - mongo
-      - stan
+      - nats
     networks:
       - internal
 
@@ -41,7 +40,7 @@ services:
       SERVICES: city
     depends_on:
       - mongo
-      - stan
+      - nats
     networks:
       - internal
 
@@ -54,7 +53,7 @@ services:
       SERVICES: banner
     depends_on:
       - mongo
-      - stan
+      - nats
     networks:
       - internal
 
@@ -67,7 +66,7 @@ services:
       SERVICES: expertise
     depends_on:
       - mongo
-      - stan
+      - nats
     networks:
       - internal
 
@@ -80,7 +79,7 @@ services:
       SERVICES: file
     depends_on:
       - mongo
-      - stan
+      - nats
     networks:
       - internal
 
@@ -93,7 +92,7 @@ services:
       SERVICES: level
     depends_on:
       - mongo
-      - stan
+      - nats
     networks:
       - internal
 
@@ -106,7 +105,7 @@ services:
       SERVICES: permission
     depends_on:
       - mongo
-      - stan
+      - nats
     networks:
       - internal
 
@@ -119,7 +118,7 @@ services:
       SERVICES: permission-role
     depends_on:
       - mongo
-      - stan
+      - nats
     networks:
       - internal
 
@@ -132,7 +131,7 @@ services:
       SERVICES: role
     depends_on:
       - mongo
-      - stan
+      - nats
     networks:
       - internal
 
@@ -145,7 +144,7 @@ services:
       SERVICES: service
     depends_on:
       - mongo
-      - stan
+      - nats
     networks:
       - internal
 
@@ -158,7 +157,7 @@ services:
       SERVICES: service-form
     depends_on:
       - mongo
-      - stan
+      - nats
     networks:
       - internal
 
@@ -171,7 +170,7 @@ services:
       SERVICES: service-price
     depends_on:
       - mongo
-      - stan
+      - nats
     networks:
       - internal
 
@@ -184,7 +183,7 @@ services:
       SERVICES: service-price-type
     depends_on:
       - mongo
-      - stan
+      - nats
     networks:
       - internal
 
@@ -197,7 +196,7 @@ services:
       SERVICES: service-type
     depends_on:
       - mongo
-      - stan
+      - nats
     networks:
       - internal
 
@@ -210,7 +209,7 @@ services:
       SERVICES: status
     depends_on:
       - mongo
-      - stan
+      - nats
     networks:
       - internal
 
@@ -223,7 +222,7 @@ services:
       SERVICES: unit
     depends_on:
       - mongo
-      - stan
+      - nats
     networks:
       - internal
 
@@ -236,7 +235,7 @@ services:
       SERVICES: user
     depends_on:
       - mongo
-      - stan
+      - nats
     networks:
       - internal
 
@@ -249,7 +248,7 @@ services:
       SERVICES: user-role
     depends_on:
       - mongo
-      - stan
+      - nats
     networks:
       - internal
 
@@ -262,7 +261,7 @@ services:
       SERVICES: user-type
     depends_on:
       - mongo
-      - stan
+      - nats
     networks:
       - internal
 
@@ -275,7 +274,7 @@ services:
       SERVICES: work-formality
     depends_on:
       - mongo
-      - stan
+      - nats
     networks:
       - internal
 
@@ -286,7 +285,7 @@ services:
     networks:
       - internal
 
-  stan:
+  nats:
     image: nats-streaming
     command:
       - "--max_channels=1000"
