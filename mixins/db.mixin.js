@@ -140,7 +140,8 @@ module.exports = function (collection) {
 			keepAlive: 1,
 		});
 		schema.collection = collection;
-	} // else if (process.env.NODE_ENV === "test") {
+	}
+	// else if (process.env.NODE_ENV === "test") {
 	// 	// NeDB memory adapter for testing
 	// 	schema.adapter = new DbService.MemoryAdapter();
 	// } else {
