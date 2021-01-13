@@ -202,33 +202,43 @@ module.exports = {
 	 * Methods
 	 */
 	methods: {
-		// async seedDB () {
-		// 	const pass = "123456";
-		// 	const emails = ["nhanhkut3@gmail.com", "admin@gmail.com", "local@gmail.com"];
-		// 	const phones = ["0932779270", "0344403435", "0987654321"];
-		// 	let data = [];
-		// 	for (let i = 0; i < emails.length; i++) {
-		// 		const role = i === 0 ? "b1f08c96-f1f6-4068-8fe8-733e1ce5b7fd" : "97cfd6cc-5fe6-4127-8374-0d268bf17ab3";
-		// 		data.push({
-		// 			_id: `c6cdce48-0574-45f6-ad13-05f24d1b7471-${ i }`,
-		// 			avatar: "0de2b567-edb5-4f54-ba18-6d69653ed7ea",
-		// 			banner: "0de2b567-edb5-4f54-ba18-6d69653ed7ea",
-		// 			email: emails[i],
-		// 			birthday: "2020-11-02",
-		// 			password: bcrypt.hashSync(pass, 10),
-		// 			phone: phones[i],
-		// 			city: "1d84fccc-bdfe-49ee-ae20-c3f13d503a70-1",
-		// 			user_type: "83ece746-bdb2-42c7-8df8-0eb5325a08af-1",
-		// 			expertises: ["ccce1f35-cc78-404c-80f8-3d682f293abe-1", "ccce1f35-cc78-404c-80f8-3d682f293abe-2"],
-		// 			level: "7d1ae12d-74cc-4ff7-9651-5296c29c7f43-1",
-		// 			attaches: ["0de2b567-edb5-4f54-ba18-6d69653ed7ea"],
-		// 			status: "33a19fcf-a2c2-4beb-82f7-af9b46d18a3d",
-		// 			role: role,
-		// 			created_at: new Date(),
-		// 		});
-		// 	}
-		// 	await this.adapter.insertMany(data);
-		// },
+		async seedDB() {
+			const pass = "123456";
+			const emails = [
+				"nhanhkut3@gmail.com",
+				"admin@gmail.com",
+				"local@gmail.com",
+			];
+			const phones = ["0932779270", "0344403435", "0987654321"];
+			let data = [];
+			for (let i = 0; i < emails.length; i++) {
+				const role =
+					i === 0
+						? "b1f08c96-f1f6-4068-8fe8-733e1ce5b7fd"
+						: "97cfd6cc-5fe6-4127-8374-0d268bf17ab3";
+				data.push({
+					_id: `c6cdce48-0574-45f6-ad13-05f24d1b7471-${i}`,
+					avatar: "0de2b567-edb5-4f54-ba18-6d69653ed7ea",
+					banner: "0de2b567-edb5-4f54-ba18-6d69653ed7ea",
+					email: emails[i],
+					birthday: "2020-11-02",
+					password: bcrypt.hashSync(pass, 10),
+					phone: phones[i],
+					city: "1d84fccc-bdfe-49ee-ae20-c3f13d503a70-1",
+					user_type: "83ece746-bdb2-42c7-8df8-0eb5325a08af-1",
+					expertises: [
+						"ccce1f35-cc78-404c-80f8-3d682f293abe-1",
+						"ccce1f35-cc78-404c-80f8-3d682f293abe-2",
+					],
+					level: "7d1ae12d-74cc-4ff7-9651-5296c29c7f43-1",
+					attaches: ["0de2b567-edb5-4f54-ba18-6d69653ed7ea"],
+					status: "33a19fcf-a2c2-4beb-82f7-af9b46d18a3d",
+					role: role,
+					created_at: new Date(),
+				});
+			}
+			await this.adapter.insertMany(data);
+		},
 
 		async afterConnected() {
 			this.adapter.collection.createIndex(schema.settings.indexes);
