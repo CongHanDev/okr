@@ -129,6 +129,9 @@ module.exports = function (collection) {
 			}
 		},
 	};
+	const MongoAdapter = require("moleculer-db-adapter-mongo");
+	if (process.env.MONGO_URI == undefined)
+		process.env.MONGO_URI = "mongodb://127.0.0.1:27017/okr-business";
 
 	if (process.env.MONGO_URI) {
 		// Mongo adapter
