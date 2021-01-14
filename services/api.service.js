@@ -196,7 +196,7 @@ module.exports = {
 						);
 					}
 				} catch (error) {
-					responder.httpError("Can't accept with token.");
+					responder.httpError(translate('token_error'));
 				}
 			} else {
 				// No token. Throw an error or do nothing if anonymous access is allowed.
