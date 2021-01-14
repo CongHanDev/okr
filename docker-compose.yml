@@ -79,7 +79,7 @@ services:
       SERVICES: file
     depends_on:
       - mongo
-      - stan
+      - nats
     networks:
       - internal
 
