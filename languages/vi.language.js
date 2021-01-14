@@ -18,4 +18,5 @@ module.exports = {
 	not_found: " không tồn tại.",
 	user: "Người dùng",
 	account: "Tài khoản",
+  token_error: "Token không hợp lệ.",
 };
