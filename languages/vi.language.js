@@ -4,7 +4,7 @@ module.exports = {
 	unauthorized: "Unauthorized",
 	user_name_invalid: "Email hoặc số điện thoại không đúng.",
 	password_invalid: "Mật khẩu không khớp.",
-	phone_exists: "Số điện thoại không tồn tại.",
+	phone_exists: "Số điện thoại đã được đăng ký.",
 	email_exists: "Email không tồn tại.",
 	password_required: "Mật khẩu không tồn tại.",
 	otp_required: "OTP không tồn tại.",
