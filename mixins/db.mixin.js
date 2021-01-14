@@ -133,7 +133,6 @@ module.exports = function (collection) {
 	if (process.env.MONGO_URI == undefined) {
 		process.env.MONGO_URI = "mongodb://mongo/okr-business";
 	}
-
 	if (process.env.MONGO_URI) {
 		const MongoAdapter = require("moleculer-db-adapter-mongo");
 
