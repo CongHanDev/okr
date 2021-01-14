@@ -70,7 +70,7 @@ services:
     networks:
       - internal
 
-  file:
+ file:
     build:
       context: .
     image: okr-business
@@ -79,7 +79,7 @@ services:
       SERVICES: file
     depends_on:
       - mongo
-      - stan
+      - nats
     networks:
       - internal
 
