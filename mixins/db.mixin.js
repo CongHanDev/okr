@@ -130,6 +130,15 @@ module.exports = function (collection) {
 		},
 	};
 
+	if (process.env.MONGO_URI == undefined) {
+		const MongoAdapter = require("moleculer-db-adapter-mongo");
+
+		schema.adapter = new MongoAdapter("mongodb://mongo/okr-business", {
+			keepAlive: 1,
+		});
+		schema.collection = collection;
+	}
+
 	if (process.env.MONGO_URI) {
 		// Mongo adapter
 		const MongoAdapter = require("moleculer-db-adapter-mongo");
