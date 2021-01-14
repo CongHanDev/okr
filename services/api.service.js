@@ -151,7 +151,7 @@ module.exports = {
 		// on Error
 		onError (req, res, err) {
 			res.setHeader("Content-Type", "application/json");
-			if (err.code && _.includes([500, 404, 401], err.code)) {
+			if (err.code && _.includes([500, 404, 401, 400], err.code)) {
 				res.writeHead(err.code);
 			}
 			res.end(
