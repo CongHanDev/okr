@@ -10,39 +10,43 @@ const responder = require("../mixins/response.mixin");
  */
 
 module.exports = function (collection) {
-	const cacheCleanEventName = `cache.clean.${ collection }`;
+	const cacheCleanEventName = `cache.clean.${collection}`;
 
 	const schema = {
 		mixins: [DbService, responder],
 
 		events: {
 			/**
-       * Subscribe to the cache clean event. If it's triggered
-       * clean the cache entries for this service.
-       *
-       * @param {Context} ctx
-       */
-			async [cacheCleanEventName] () {
+			 * Subscribe to the cache clean event. If it's triggered
+			 * clean the cache entries for this service.
+			 *
+			 * @param {Context} ctx
+			 */
+			async [cacheCleanEventName]() {
 				if (this.broker.cacher) {
-					await this.broker.cacher.clean(`${ this.fullName }.*`);
+					await this.broker.cacher.clean(`${this.fullName}.*`);
 				}
 			},
 		},
 
 		methods: {
 			/**
-       * Send a cache clearing event when an entity changed.
-       *
-       * @param {String} type
-       * @param {any} json
-       * @param {Context} ctx
-       */
-			async entityChanged (type, json, ctx) {
+			 * Send a cache clearing event when an entity changed.
+			 *
+			 * @param {String} type
+			 * @param {any} json
+			 * @param {Context} ctx
+			 */
+			async entityChanged(type, json, ctx) {
 				ctx.broadcast(cacheCleanEventName);
 			},
-			async loadList (ctx, transformer) {
-				const limit = ctx.params.limit ? Number(ctx.params.limit) : process.env.LIMIT;
-				const offset = ctx.params.offset ? Number(ctx.params.offset) : 0;
+			async loadList(ctx, transformer) {
+				const limit = ctx.params.limit
+					? Number(ctx.params.limit)
+					: process.env.LIMIT;
+				const offset = ctx.params.offset
+					? Number(ctx.params.offset)
+					: 0;
 				const name = ctx.params.name || null;
 				const populates = _.keys(this.settings.populates);
 				let params = {
@@ -57,7 +61,8 @@ module.exports = function (collection) {
 				countParams = Object.assign({}, params);
 				// Remove pagination params
 				if (countParams && countParams.limit) countParams.limit = null;
-				if (countParams && countParams.offset) countParams.offset = null;
+				if (countParams && countParams.offset)
+					countParams.offset = null;
 
 				const res = await this.Promise.all([
 					// Get rows
@@ -73,7 +78,7 @@ module.exports = function (collection) {
 				return this.httpOK(docs, transformer, params);
 			},
 
-			async getEntityById (ctx, transformer) {
+			async getEntityById(ctx, transformer) {
 				const entity = await this.adapter.findById(ctx.params.id);
 				if (!entity) {
 					this.httpNotFound();
@@ -81,32 +86,45 @@ module.exports = function (collection) {
 				return this.httpOK(entity, transformer);
 			},
 
-			mapEntity (request, isUpdate = false) {
+			mapEntity(request, isUpdate = false) {
 				/* Get fields */
 				let fields = this.settings.fields;
 				if (isUpdate) {
-					fields = _.intersection(_.values(this.settings.fields), _.keys(request));
-					fields = _.difference(fields, [...this.settings.fieldsNotUpdate, "_id", "id"]);
+					fields = _.intersection(
+						_.values(this.settings.fields),
+						_.keys(request)
+					);
+					fields = _.difference(fields, [
+						...this.settings.fieldsNotUpdate,
+						"_id",
+						"id",
+					]);
 				}
 
 				/* Map to entity */
 				let newEntity = {};
 				fields.forEach((field) => {
-					newEntity[field] = request[field] != null ? request[field] : null;
+					newEntity[field] =
+						request[field] != null ? request[field] : null;
 				});
 				return newEntity;
 			},
 		},
 
-		async started () {
+		async started() {
 			// Check the count of items in the DB. If it's empty,
 			// call the `seedDB` method of the service.
 			if (this.seedDB) {
 				const count = await this.adapter.count();
 				if (count == 0) {
-					this.logger.info(`The '${ collection }' collection is empty. Seeding the collection...`);
+					this.logger.info(
+						`The '${collection}' collection is empty. Seeding the collection...`
+					);
 					await this.seedDB();
-					this.logger.info("Seeding is done. Number of records:", await this.adapter.count());
+					this.logger.info(
+						"Seeding is done. Number of records:",
+						await this.adapter.count()
+					);
 				}
 			}
 		},
@@ -116,7 +134,9 @@ module.exports = function (collection) {
 		// Mongo adapter
 		const MongoAdapter = require("moleculer-db-adapter-mongo");
 
-		schema.adapter = new MongoAdapter(process.env.MONGO_URI);
+		schema.adapter = new MongoAdapter(process.env.MONGO_URI, {
+			keepAlive: 1,
+		});
 		schema.collection = collection;
 	} else if (process.env.NODE_ENV === "test") {
 		// NeDB memory adapter for testing
@@ -129,8 +149,19 @@ module.exports = function (collection) {
 			fs.mkdirSync("./data");
 		}
 
-		schema.adapter = new DbService.MemoryAdapter({ filename: `./data/${ collection }.db` });
+		schema.adapter = new DbService.MemoryAdapter({
+			filename: `./data/${collection}.db`,
+		});
 	}
+
+	// Create data folder
+	if (!fs.existsSync("./data")) {
+		fs.mkdirSync("./data");
+	}
+
+	schema.adapter = new DbService.MemoryAdapter({
+		filename: `./data/${collection}.db`,
+	});
 
 	return schema;
 };

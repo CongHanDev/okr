@@ -5,6 +5,11 @@ const CacheCleanerMixin = require("../mixins/cache.cleaner.mixin");
 
 module.exports = {
 	name: "auth",
-  mixins: [CacheCleanerMixin(["cache.clean.auth"])],
+	mixins: [CacheCleanerMixin(["cache.clean.auth"])],
 	actions: authActions,
+	methods: {
+		async afterConnected () {
+			this.adapter.collection.createIndex({ "$**": "text" });
+		},
+	},
 };

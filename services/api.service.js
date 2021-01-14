@@ -2,6 +2,8 @@
 
 const ApiGateway = require("moleculer-web");
 const responder = require("../mixins/response.mixin");
+const { translate } = require("../languages/index.language");
+const _ = require("lodash");
 
 /**
  * @typedef {import('moleculer').Context} Context Moleculer's Context
@@ -149,7 +151,9 @@ module.exports = {
 		// on Error
 		onError (req, res, err) {
 			res.setHeader("Content-Type", "application/json");
-			res.writeHead(err.code || 500);
+			if (err.code && _.includes([500, 404, 401], err.code)) {
+				res.writeHead(err.code);
+			}
 			res.end(
 				JSON.stringify({
 					status: err.code || 500,
@@ -181,14 +185,18 @@ module.exports = {
 			if (auth && auth.startsWith("Bearer")) {
 				const token = auth.slice(7);
 				// Check the token. Tip: call a service which verify the token. E.g. `accounts.resolveToken`
-				const userID = await ctx.call("auth.resolveToken", { token });
-				if (userID) {
-					ctx.meta.auth = { id: userID };
-				} else {
-					// Invalid token
-					responder.httpUnauthorized(
-						ApiGateway.Errors.ERR_INVALID_TOKEN,
-					);
+				try {
+					const userID = await ctx.call("auth.resolveToken", { token });
+					if (userID) {
+						ctx.meta.auth = { id: userID };
+					} else {
+						// Invalid token
+						responder.httpUnauthorized(
+							ApiGateway.Errors.ERR_INVALID_TOKEN,
+						);
+					}
+				} catch (error) {
+					responder.httpError("Can't accept with token.");
 				}
 			} else {
 				// No token. Throw an error or do nothing if anonymous access is allowed.

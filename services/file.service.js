@@ -2,6 +2,8 @@
 
 const routers = require("../routes/file.route");
 const schema = require("../schemas/file.schema");
+const responder = require("../mixins/response.mixin");
+const { translate } = require("../languages/index.language");
 const fs = require("fs");
 const path = require("path");
 const uuid = require("uuid");
@@ -31,6 +33,19 @@ module.exports = {
 			...routers.get,
 		},
 
+		data: {
+			...routers.data,
+			async handler (ctx) {
+				const file = await this.adapter.findById(ctx.params.id);
+				if (!file) {
+					return responder.httpNotFound("File");
+				}
+				ctx.meta.$responseType = file.mime_type;
+				const filePath = path.join(__dirname, `../public${ file.path }`);
+				return fs.readFileSync(filePath);
+			},
+		},
+
 		/**
      * List
      *
@@ -57,7 +72,7 @@ module.exports = {
 		uploadSingle: {
 			auth: "required",
 			handler (ctx) {
-				return this.save("images", ctx);
+				return this.save("files", ctx);
 			},
 		},
 
@@ -65,7 +80,7 @@ module.exports = {
 			auth: "required",
 			async handler (ctx) {
 				const file = await this.save("avatar", ctx);
-				await ctx.call("user.update", { id: ctx.meta.auth.id, avatar_id: { ...file }._id });
+				await ctx.call("user.update", { id: ctx.meta.auth.id, avatar: { ...file }._id });
 				return file;
 			},
 		},
@@ -75,6 +90,9 @@ module.exports = {
    * Methods
    */
 	methods: {
+		async afterConnected () {
+			this.adapter.collection.createIndex(schema.settings.indexes);
+		},
 		async seedDB () {
 			const data =
         [

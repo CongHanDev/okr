@@ -28,7 +28,7 @@ const actions = {
 		async handler (ctx) {
 			const { user_name, password } = ctx.params;
 			const users = await ctx.call("user.find",
-				{ populate: ["status"], query: { $or: [{ email: user_name }, { phone: user_name }] } });
+				{ populate: ["status", "role"], query: { $or: [{ email: user_name }, { phone: user_name }] } });
 			const user = _.first(users);
 			if (!user) {
 				return responder.httpBadRequest(translate("unauthorized"), { user_name: translate("user_name_invalid") });
@@ -41,7 +41,10 @@ const actions = {
 				return responder.httpBadRequest(translate("account_not_active"),
 					{ user_name: translate("account_not_active") });
 			}
-
+			if (!user.role) {
+				const role = ctx.call("role.find", { query: { slug: "ADMIN" } });
+				user.role = _.first(role)._id;
+			}
 			return generateToken(user);
 		},
 	},
@@ -99,12 +102,12 @@ const actions = {
 			const users = await ctx.call("user.find", { query: { email: email } });
 			const user = _.first(users);
 			if (!user) {
-				return responder.httpNotFound();
+				return responder.httpNotFound(translate("user"));
 			}
 			/* Send OTP */
 			const otp = cryptoRandomString({ length: 6, type: "numeric" }).toUpperCase();
 			user.otp = otp;
-			let isSend = await emailProvider.passwordVerify(user);
+			const isSend = await emailProvider.passwordVerify(user);
 			if (isSend) {
 				await ctx.call("user.update", { id: user._id, otp: otp });
 				return responder.httpOK([]);
@@ -120,16 +123,15 @@ const actions = {
 	verifyForgotPassword: {
 		...routers.verifyPassword,
 		async handler (ctx) {
-			const { email, otp, password } = ctx.params;
-			const users = await ctx.call("user.find", { query: { email: email } });
+			const users = await ctx.call("user.find", { query: { email: ctx.params.email } });
 			const user = _.first(users);
 			if (!user) {
-				return responder.httpNotFound();
+				return responder.httpNotFound(translate("user"));
 			}
-			if (user.otp !== otp) {
+			if (ctx.params.otp != user.otp) {
 				return responder.httpBadRequest(translate("password_reset"), { otp: translate("otp_valid") });
 			}
-			await ctx.call("user.update", { id: user._id, otp: "", password: bcrypt.hashSync(password, 10) });
+			await ctx.call("user.update", { id: user._id, otp: "", password: bcrypt.hashSync(ctx.params.password, 10) });
 			return responder.httpOK([]);
 		},
 	},
@@ -149,13 +151,13 @@ const actions = {
 			let errors = {};
 			const entity = await ctx.call("user.get", { id: request.id });
 			if (!entity) {
-				return responder.httpNotFound();
+				return responder.httpNotFound(translate("user"));
 			}
 			/* Validate otp */
 			if (!_.has(request, "otp")) {
 				errors.otp = translate("otp_required");
 			}
-			if (entity.otp !== request.otp) {
+			if (entity.otp != request.otp) {
 				errors.otp = translate("otp_valid");
 			}
 			if (_.keys(errors).length) {
@@ -203,17 +205,24 @@ const actions = {
 					"attaches",
 					"services",
 					"status",
+					"role",
 				],
 			});
 			if (!user) {
-				return responder.httpBadRequest(translate("unauthorized"), { user_name: translate("user_name_invalid") },
+				return responder.httpBadRequest(
+					translate("unauthorized"),
+					{ user_name: translate("user_name_invalid") },
 				);
-
 			}
-			const pop = ["service_type", "service", "unit", "status"];
-			const service_forms = await ctx.call("service-form.find",
-				{ populate: pop, query: { user: ctx.meta.auth.id } });
-			user.service_forms = service_forms;
+			const pop = ["service_type", "service", "unit", "status", "role"];
+			user.service_forms = await ctx.call("service-form.find",
+				{
+					populate: pop,
+					query: {
+						user: ctx.meta.auth.id,
+					},
+				},
+			);
 			return user;
 		},
 	},
@@ -274,6 +283,7 @@ const generateToken = (user) => {
 
 	return {
 		token: token,
+		role: (user.role && user.role.slug) ? user.role.slug : "ADMIN",
 		exp: expiredTime,
 	};
 };

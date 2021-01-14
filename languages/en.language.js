@@ -14,4 +14,10 @@ module.exports = {
 	send_email_error: "Can't send email.",
 	account_not_active: "The account is not activated.",
 	password_reset: "Reset password.",
+	file_not_found: "File not found.",
+	user_not_found: "User not found.",
+	token_error: "Can't accept with token.",
+	not_found: " not found",
+	user: "User",
+	account: "Account",
 };
