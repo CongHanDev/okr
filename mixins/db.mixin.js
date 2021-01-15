@@ -130,9 +130,9 @@ module.exports = function (collection) {
 		},
 	};
 
-	// if (process.env.MONGO_URI == undefined) {
-	// 	process.env.MONGO_URI = "mongodb://mongo/okr-business";
-	// }
+	if (process.env.MONGO_URI == undefined) {
+		process.env.MONGO_URI = "mongodb://mongo/okr-business";
+	}
 	if (process.env.MONGO_URI) {
 		const MongoAdapter = require("moleculer-db-adapter-mongo");
 
@@ -140,30 +140,31 @@ module.exports = function (collection) {
 			keepAlive: 1,
 		});
 		schema.collection = collection;
-	} else if (process.env.NODE_ENV === "test") {
-		// NeDB memory adapter for testing
-		schema.adapter = new DbService.MemoryAdapter();
-	} else {
-		// NeDB file DB adapter
-
-		// Create data folder
-		if (!fs.existsSync("./data")) {
-			fs.mkdirSync("./data");
-		}
-
-		schema.adapter = new DbService.MemoryAdapter({
-			filename: `./data/${collection}.db`,
-		});
 	}
+	//else if (process.env.NODE_ENV === "test") {
+	// 	// NeDB memory adapter for testing
+	// 	schema.adapter = new DbService.MemoryAdapter();
+	// } else {
+	// 	// NeDB file DB adapter
 
-	// Create data folder
-	if (!fs.existsSync("./data")) {
-		fs.mkdirSync("./data");
-	}
+	// 	// Create data folder
+	// 	if (!fs.existsSync("./data")) {
+	// 		fs.mkdirSync("./data");
+	// 	}
 
-	schema.adapter = new DbService.MemoryAdapter({
-		filename: `./data/${collection}.db`,
-	});
+	// 	schema.adapter = new DbService.MemoryAdapter({
+	// 		filename: `./data/${collection}.db`,
+	// 	});
+	// }
+
+	// // Create data folder
+	// if (!fs.existsSync("./data")) {
+	// 	fs.mkdirSync("./data");
+	// }
+
+	// schema.adapter = new DbService.MemoryAdapter({
+	// 	filename: `./data/${collection}.db`,
+	// });
 
 	return schema;
 };
